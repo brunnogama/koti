@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Plus, Search } from 'lucide-react';
+import { X, Plus, Search, Lightbulb, ToggleLeft, Thermometer, Activity, Sparkles, Layers } from 'lucide-react';
 import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig, WidgetSize } from '../../types/dashboard';
+import { MOCK_ENTITY_IDS } from '../../services/mockData';
 
 interface AddWidgetModalProps {
   isOpen: boolean;
@@ -11,6 +12,8 @@ interface AddWidgetModalProps {
   currentRoomId: string;
 }
 
+type DomainFilter = 'all' | 'light' | 'switch' | 'climate' | 'sensor' | 'scene';
+
 export const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
   isOpen,
   onClose,
@@ -19,12 +22,24 @@ export const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
   currentRoomId,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState<DomainFilter>('all');
   const [selectedEntityId, setSelectedEntityId] = useState('');
   const [size, setSize] = useState<WidgetSize>('1x1');
 
   if (!isOpen) return null;
 
-  const entityList = Object.values(availableEntities).filter((ent) => {
+  const realEntities = Object.values(availableEntities).filter(
+    (ent) => !MOCK_ENTITY_IDS.has(ent.entity_id)
+  );
+
+  const entityList = realEntities.filter((ent) => {
+    const domain = ent.entity_id.split('.')[0];
+    if (selectedDomain === 'light' && domain !== 'light') return false;
+    if (selectedDomain === 'switch' && domain !== 'switch') return false;
+    if (selectedDomain === 'climate' && domain !== 'climate') return false;
+    if (selectedDomain === 'scene' && domain !== 'scene') return false;
+    if (selectedDomain === 'sensor' && domain !== 'sensor' && domain !== 'binary_sensor') return false;
+
     const name = (ent.attributes.friendly_name || ent.entity_id).toLowerCase();
     return name.includes(searchTerm.toLowerCase()) || ent.entity_id.includes(searchTerm.toLowerCase());
   });
@@ -42,11 +57,25 @@ export const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
     onClose();
   };
 
+  const domainTabs: { id: DomainFilter; label: string; icon: any }[] = [
+    { id: 'all', label: 'Todos', icon: Layers },
+    { id: 'light', label: 'Luzes', icon: Lightbulb },
+    { id: 'switch', label: 'Tomadas', icon: ToggleLeft },
+    { id: 'climate', label: 'Clima', icon: Thermometer },
+    { id: 'sensor', label: 'Sensores', icon: Activity },
+    { id: 'scene', label: 'Cenários', icon: Sparkles },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="w-full max-w-lg oneui-glass rounded-[32px] p-6 shadow-2xl border border-white/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+      <div className="w-full max-w-lg oneui-glass rounded-[32px] p-6 shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
-          <h2 className="text-xl font-light text-white">Adicionar Dispositivo</h2>
+          <div>
+            <h2 className="text-xl font-light text-white">Adicionar Dispositivo</h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {realEntities.length} dispositivos encontrados no Home Assistant
+            </p>
+          </div>
           <button
             onClick={onClose}
             className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
@@ -55,72 +84,108 @@ export const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
           </button>
         </div>
 
-        {/* Search */}
-        <div className="mt-4 relative">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar dispositivo ou sensor..."
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm"
-          />
-        </div>
-
-        {/* Entity List */}
-        <div className="mt-4 max-h-60 overflow-y-auto space-y-1.5 pr-1">
-          {entityList.map((ent) => {
-            const isSelected = ent.entity_id === selectedEntityId;
+        {/* Category Domain Filter Tabs */}
+        <div className="flex items-center gap-1.5 mt-4 overflow-x-auto no-scrollbar pb-1">
+          {domainTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isTabActive = selectedDomain === tab.id;
             return (
               <button
-                key={ent.entity_id}
+                key={tab.id}
                 type="button"
-                onClick={() => setSelectedEntityId(ent.entity_id)}
-                className={`w-full text-left p-3 rounded-2xl flex items-center justify-between transition-all ${
-                  isSelected
-                    ? 'bg-blue-600/30 border border-blue-500 text-white'
-                    : 'bg-white/5 border border-transparent text-slate-300 hover:bg-white/10'
+                onClick={() => setSelectedDomain(tab.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 whitespace-nowrap transition-all shrink-0 ${
+                  isTabActive
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <div>
-                  <div className="font-medium text-sm text-white">
-                    {ent.attributes.friendly_name || ent.entity_id}
-                  </div>
-                  <div className="text-xs text-slate-400 font-mono mt-0.5">{ent.entity_id}</div>
-                </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-300">
-                  {ent.state}
-                </span>
+                <Icon size={13} />
+                <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
 
+        {/* Search */}
+        <div className="mt-3 relative">
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por nome ou entidade..."
+            className="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm"
+          />
+        </div>
+
+        {/* Entity List */}
+        <div className="mt-3 flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-[160px] max-h-[260px]">
+          {entityList.length === 0 ? (
+            <div className="py-12 text-center text-slate-400 text-xs">
+              {realEntities.length === 0
+                ? 'Nenhum dispositivo cadastrado carregado. Conectando ao Home Assistant...'
+                : 'Nenhum dispositivo corresponde à busca.'}
+            </div>
+          ) : (
+            entityList.map((ent) => {
+              const isSelected = ent.entity_id === selectedEntityId;
+              return (
+                <button
+                  key={ent.entity_id}
+                  type="button"
+                  onClick={() => setSelectedEntityId(ent.entity_id)}
+                  className={`w-full text-left p-3 rounded-2xl flex items-center justify-between transition-all ${
+                    isSelected
+                      ? 'bg-blue-600/30 border border-blue-500 text-white'
+                      : 'bg-white/5 border border-transparent text-slate-300 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="min-w-0 pr-2">
+                    <div className="font-medium text-sm text-white truncate">
+                      {ent.attributes.friendly_name || ent.entity_id}
+                    </div>
+                    <div className="text-xs text-slate-400 font-mono mt-0.5 truncate">{ent.entity_id}</div>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-300 shrink-0">
+                    {ent.state}
+                  </span>
+                </button>
+              );
+            })
+          )}
+        </div>
+
         {/* Size Selection */}
-        <div className="mt-4 pt-3 border-t border-white/10">
+        <div className="mt-3 pt-3 border-t border-white/10">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-            Tamanho Inicial
+            Formato / Tamanho Inicial
           </label>
-          <div className="grid grid-cols-3 gap-2">
-            {(['1x1', '2x1', '2x2'] as WidgetSize[]).map((s) => (
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { id: 'pill' as WidgetSize, label: 'Pílula' },
+              { id: '1x1' as WidgetSize, label: '1x1' },
+              { id: '2x1' as WidgetSize, label: '2x1' },
+              { id: '2x2' as WidgetSize, label: '2x2' },
+            ].map((s) => (
               <button
-                key={s}
+                key={s.id}
                 type="button"
-                onClick={() => setSize(s)}
+                onClick={() => setSize(s.id)}
                 className={`py-2 rounded-xl text-xs font-medium border transition-all ${
-                  size === s
-                    ? 'bg-blue-600 border-blue-500 text-white'
-                    : 'bg-white/5 border-white/10 text-slate-300'
+                  size === s.id
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-md'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                 }`}
               >
-                {s}
+                {s.label}
               </button>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+        <div className="mt-4 flex items-center justify-end gap-3 pt-3 border-t border-white/10">
           <button
             onClick={onClose}
             className="px-5 py-2.5 rounded-full text-xs font-medium text-slate-300 hover:text-white"
@@ -133,7 +198,7 @@ export const AddWidgetModal: React.FC<AddWidgetModalProps> = ({
             className="px-6 py-2.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/40 disabled:opacity-40 transition-all flex items-center gap-1.5"
           >
             <Plus size={15} />
-            Adicionar Card
+            Adicionar ao Painel
           </button>
         </div>
       </div>

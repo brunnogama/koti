@@ -155,6 +155,14 @@ export function useDashboardStore() {
     setActiveRoomId(newRoom.id);
   }, [layout, saveCurrentLayout]);
 
+  const updateRoom = useCallback((roomId: string, updates: Partial<Omit<RoomConfig, 'id'>>) => {
+    const updated = {
+      ...layout,
+      rooms: layout.rooms.map((r) => (r.id === roomId ? { ...r, ...updates } : r)),
+    };
+    saveCurrentLayout(updated);
+  }, [layout, saveCurrentLayout]);
+
   const removeRoom = useCallback((roomId: string) => {
     if (roomId === 'favorites') return;
     const updated = {
@@ -210,6 +218,7 @@ export function useDashboardStore() {
     removeWidget,
     addWidget,
     addRoom,
+    updateRoom,
     removeRoom,
     updateTheme,
     updateUserConfig,

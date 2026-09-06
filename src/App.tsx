@@ -15,9 +15,11 @@ import { WeatherWidget } from './components/widgets/WeatherWidget';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { EditWidgetModal } from './components/dashboard/EditWidgetModal';
 import { AddWidgetModal } from './components/dashboard/AddWidgetModal';
-import { RoomManagerModal } from './components/dashboard/RoomManagerModal';
 import { WallClockAmbient } from './components/dashboard/WallClockAmbient';
 import { WidgetConfig, WeatherData } from './types/dashboard';
+import { RoomsView } from './components/views/RoomsView';
+import { ScenesView } from './components/views/ScenesView';
+import { MOCK_ENTITY_IDS } from './services/mockData';
 import { Plus } from 'lucide-react';
 
 export function App() {
@@ -49,6 +51,7 @@ export function App() {
     removeWidget,
     addWidget,
     addRoom,
+    updateRoom,
     removeRoom,
     updateTheme,
     updateUserConfig,
@@ -88,7 +91,6 @@ export function App() {
   // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAddWidgetOpen, setIsAddWidgetOpen] = useState(false);
-  const [isRoomManagerOpen, setIsRoomManagerOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<WidgetConfig | null>(null);
   const [currentNavTab, setCurrentNavTab] = useState<'home' | 'rooms' | 'automations' | 'settings'>('home');
 
@@ -116,6 +118,25 @@ export function App() {
   }, [entities]);
 
   const currentRoom = layout.rooms.find((r) => r.id === activeRoomId) || layout.rooms[0];
+
+  const headerTitle = useMemo(() => {
+    if (currentNavTab === 'rooms') return 'Cômodos';
+    if (currentNavTab === 'automations') return 'Cenários';
+    return undefined;
+  }, [currentNavTab]);
+
+  const headerSubtitle = useMemo(() => {
+    if (currentNavTab === 'rooms') {
+      return `${layout.rooms.length} cômodos cadastrados`;
+    }
+    if (currentNavTab === 'automations') {
+      const realScenesCount = Object.values(entities).filter(
+        (e) => e.entity_id.startsWith('scene.') && !MOCK_ENTITY_IDS.has(e.entity_id)
+      ).length;
+      return `${realScenesCount} cenários cadastrados no Home Assistant`;
+    }
+    return `${currentRoom.name} • ${activeCount} aparelhos ativos`;
+  }, [currentNavTab, layout.rooms.length, currentRoom.name, activeCount, entities]);
 
   // Theme Background calculation
   const backgroundStyle = useMemo(() => {
@@ -203,7 +224,8 @@ export function App() {
       {/* Main Header in Samsung One UI Style with Dynamic Greeting & Weather */}
       <OneUIHeader
         userName={layout.userName}
-        subtitle={`${currentRoom.name} • ${activeCount} aparelhos ativos`}
+        title={headerTitle}
+        subtitle={headerSubtitle}
         weather={weather}
         activeDevicesCount={activeCount}
         connectionStatus={connectionStatus}
@@ -214,26 +236,63 @@ export function App() {
         onToggleTVMode={toggleForceTVMode}
       />
 
-      {/* Room Tabs Pills */}
-      <OneUIPill
-        rooms={layout.rooms}
-        activeRoomId={activeRoomId}
-        onSelectRoom={(id) => setActiveRoomId(id)}
-        onManageRooms={() => setIsRoomManagerOpen(true)}
-        accentColor={layout.theme.accentColor}
-      />
+      {/* Room Tabs Pills (only in Home tab) */}
+      {currentNavTab === 'home' && (
+        <OneUIPill
+          rooms={layout.rooms}
+          activeRoomId={activeRoomId}
+          onSelectRoom={(id) => setActiveRoomId(id)}
+          onManageRooms={() => setCurrentNavTab('rooms')}
+          accentColor={layout.theme.accentColor}
+        />
+      )}
 
       {/* Main Responsive Grid Area */}
       <main className="flex-1 px-6 md:px-10 pb-28 md:pb-12 max-w-7xl w-full mx-auto">
-        <div
-          className={`grid gap-4 sm:gap-5 transition-all duration-300 ${
-            isMobile
-              ? 'grid-cols-2'
-              : isTablet
-              ? 'grid-cols-3 lg:grid-cols-4'
-              : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-          }`}
-        >
+        {currentNavTab === 'rooms' ? (
+          <RoomsView
+            rooms={layout.rooms}
+            widgets={layout.widgets}
+            entities={entities}
+            isEditMode={isEditMode}
+            accentColor={layout.theme.accentColor}
+            onSelectRoom={(id) => {
+              setActiveRoomId(id);
+              setCurrentNavTab('home');
+            }}
+            onAddRoom={addRoom}
+            onUpdateRoom={updateRoom}
+            onDeleteRoom={removeRoom}
+          />
+        ) : currentNavTab === 'automations' ? (
+          <ScenesView
+            entities={entities}
+            widgets={layout.widgets}
+            isEditMode={isEditMode}
+            accentColor={layout.theme.accentColor}
+            onTriggerScene={(id) => toggleEntity(id)}
+            onAddSceneWidget={(sceneId, friendlyName) => {
+              addWidget({
+                entityId: sceneId,
+                roomId: activeRoomId === 'favorites' ? 'living_room' : activeRoomId,
+                size: '1x1',
+                customName: friendlyName,
+                isFavorite: true,
+                customColor: '#8B5CF6',
+              });
+            }}
+            onRemoveWidget={removeWidget}
+          />
+        ) : (
+          <div
+            className={`grid gap-4 sm:gap-5 transition-all duration-300 ${
+              isMobile
+                ? 'grid-cols-2'
+                : isTablet
+                ? 'grid-cols-3 lg:grid-cols-4'
+                : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+            }`}
+          >
           {currentWidgets.map((w) => {
             const entity = entities[w.entityId];
             const domain = w.entityId.split('.')[0];
@@ -418,17 +477,17 @@ export function App() {
               <span className="text-xs font-semibold">Adicionar Dispositivo</span>
             </button>
           )}
-        </div>
-
-        {currentWidgets.length === 0 && !isEditMode && (
-          <div className="py-20 text-center">
-            <p className="text-slate-400 text-sm">Nenhum aparelho adicionado a este cômodo ainda.</p>
-            <button
-              onClick={() => setIsEditMode(true)}
-              className="mt-4 px-6 py-2.5 rounded-full text-xs font-semibold bg-blue-600 text-white"
-            >
-              Personalizar e Adicionar
-            </button>
+            {currentWidgets.length === 0 && !isEditMode && (
+              <div className="col-span-full py-20 text-center">
+                <p className="text-slate-400 text-sm">Nenhum aparelho adicionado a este cômodo ainda.</p>
+                <button
+                  onClick={() => setIsAddWidgetOpen(true)}
+                  className="mt-4 px-6 py-2.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30 transition-all"
+                >
+                  Adicionar Dispositivo
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>
@@ -437,10 +496,14 @@ export function App() {
       <BottomNav
         currentTab={currentNavTab}
         onSelectTab={(tab) => {
+          if (tab === 'settings') {
+            setIsSettingsOpen(true);
+            return;
+          }
           setCurrentNavTab(tab);
-          if (tab === 'home') setActiveRoomId('favorites');
-          if (tab === 'rooms') setIsRoomManagerOpen(true);
-          if (tab === 'settings') setIsSettingsOpen(true);
+          if (tab === 'home') {
+            setActiveRoomId('favorites');
+          }
         }}
         accentColor={layout.theme.accentColor}
       />
@@ -483,14 +546,6 @@ export function App() {
         onAdd={addWidget}
         availableEntities={entities}
         currentRoomId={activeRoomId}
-      />
-
-      <RoomManagerModal
-        isOpen={isRoomManagerOpen}
-        rooms={layout.rooms}
-        onClose={() => setIsRoomManagerOpen(false)}
-        onAddRoom={addRoom}
-        onDeleteRoom={removeRoom}
       />
     </div>
   );

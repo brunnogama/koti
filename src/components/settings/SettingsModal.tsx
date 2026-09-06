@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   X,
+  ChevronLeft,
   Server,
   Palette,
   Download,
@@ -115,24 +116,33 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       : `Boa noite, ${nameInput || 'Bruno'}!`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-lg select-none">
-      <div className="w-full max-w-xl oneui-glass rounded-[32px] p-6 md:p-8 shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+    <div className="fixed inset-0 z-50 bg-[#0d0f12] text-slate-100 flex flex-col w-full h-full overflow-hidden select-none">
+      {/* Top Header - One UI Fullscreen Style */}
+      <div className="sticky top-0 z-20 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 px-6 bg-[#0d0f12]/95 backdrop-blur-2xl border-b border-white/10">
+        <div className="max-w-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/koti_icon.jpg" alt="Koti" className="w-8 h-8 rounded-xl shadow-md border border-white/20" />
-            <h2 className="text-xl font-light text-white">Ajustes do Koti</h2>
+            <button
+              onClick={onClose}
+              className="p-2 -ml-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              title="Voltar"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <div>
+              <h1 className="text-xl font-medium text-white tracking-tight">Configurações</h1>
+              <p className="text-xs text-slate-400">Personalização, rede e preferências</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10"
+            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-1.5 mt-4 p-1 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar">
+        <div className="max-w-xl mx-auto flex items-center gap-1.5 mt-3 p-1 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('profile')}
             className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
@@ -193,9 +203,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <span>Backup</span>
           </button>
         </div>
+      </div>
 
-        {/* Tab Body */}
-        <div className="mt-6 flex-1 overflow-y-auto space-y-6 pr-1">
+      {/* Full-Screen Scrollable Body */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 pb-28">
+        <div className="max-w-xl mx-auto space-y-6">
           {/* TAB 0: PROFILE & WEATHER LOCATION */}
           {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-5">
@@ -601,11 +613,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           )}
         </div>
+      </div>
 
-        {/* Version info footer */}
-        <div className="px-6 py-3 border-t border-white/5 bg-white/[0.02] flex items-center justify-between text-[11px] text-slate-500">
+      {/* Version info footer */}
+      <div className="sticky bottom-0 z-20 px-6 py-3 border-t border-white/10 bg-[#0d0f12]/95 backdrop-blur-xl">
+        <div className="max-w-xl mx-auto flex items-center justify-between text-[11px] text-slate-500">
           <span>Koti Smart Home • One UI 9</span>
-          <span className="font-mono">v1.0.2</span>
+          <span className="font-mono">v1.0.4</span>
         </div>
       </div>
     </div>

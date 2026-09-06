@@ -1,6 +1,6 @@
 import { DashboardLayout } from '../types/dashboard';
 import { HAConnectionConfig } from '../types/homeAssistant';
-import { DEFAULT_DASHBOARD_LAYOUT } from './mockData';
+import { DEFAULT_DASHBOARD_LAYOUT, MOCK_ENTITY_IDS } from './mockData';
 
 const STORAGE_KEYS = {
   LAYOUT: 'koti_dashboard_layout_v1',
@@ -13,9 +13,14 @@ export const storageService = {
       const stored = localStorage.getItem(STORAGE_KEYS.LAYOUT);
       if (stored) {
         const parsed = JSON.parse(stored);
-        const hasWeather = parsed.widgets?.some((w: any) => w.entityId.startsWith('weather.'));
+        // Filter out any leftover fake mock buttons
+        const cleanWidgets = (parsed.widgets || []).filter(
+          (w: any) => !MOCK_ENTITY_IDS.has(w.entityId)
+        );
+
+        const hasWeather = cleanWidgets.some((w: any) => w.entityId.startsWith('weather.'));
         const widgets = hasWeather
-          ? parsed.widgets
+          ? cleanWidgets
           : [
               {
                 id: 'w_weather',
@@ -26,7 +31,7 @@ export const storageService = {
                 isFavorite: true,
                 customColor: '#06B6D4',
               },
-              ...parsed.widgets,
+              ...cleanWidgets,
             ];
 
         return {

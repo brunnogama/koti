@@ -12,6 +12,67 @@ class HAWebSocketClient {
   private entities: Map<string, HAEntityState> = new Map();
   private reconnectTimer: number | null = null;
   private isIntentionalClose = false;
+  private pingInterval: number | null = null;
+  private lastPongTimestamp = Date.now();
+  private reconnectAttempts = 0;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          this.checkAndRecoverConnection();
+        }
+      });
+      window.addEventListener('focus', () => {
+        this.checkAndRecoverConnection();
+      });
+      window.addEventListener('online', () => {
+        this.checkAndRecoverConnection();
+      });
+    }
+  }
+
+  private checkAndRecoverConnection() {
+    if (this.config && !this.isIntentionalClose && !this.config.useDemoMode) {
+      const isDead =
+        !this.ws ||
+        this.ws.readyState === WebSocket.CLOSED ||
+        this.ws.readyState === WebSocket.CLOSING ||
+        Date.now() - this.lastPongTimestamp > 45000;
+
+      if (isDead) {
+        console.log('[Koti HA] App resumed/network change detected, auto-reconnecting...');
+        this.connect(this.config);
+      }
+    }
+  }
+
+  private startPingHeartbeat() {
+    this.stopPingHeartbeat();
+    this.lastPongTimestamp = Date.now();
+    this.pingInterval = window.setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        if (Date.now() - this.lastPongTimestamp > 50000) {
+          console.warn('[Koti HA] Ping timeout detected, recycling connection...');
+          try {
+            this.ws.close();
+          } catch (_) {}
+          return;
+        }
+        this.sendMessage({
+          id: this.messageId++,
+          type: 'ping',
+        });
+      }
+    }, 25000);
+  }
+
+  private stopPingHeartbeat() {
+    if (this.pingInterval) {
+      window.clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+  }
 
   public connect(config: HAConnectionConfig) {
     this.config = config;
@@ -23,7 +84,11 @@ class HAWebSocketClient {
     }
 
     if (this.ws) {
-      this.disconnect();
+      this.stopPingHeartbeat();
+      try {
+        this.ws.close();
+      } catch (_) {}
+      this.ws = null;
     }
 
     this.notifyStatus('connecting');
@@ -35,7 +100,7 @@ class HAWebSocketClient {
     const httpProtocol = isHttps ? 'https' : 'http';
     const wsUrl = `${wsProtocol}://${cleanHost}/api/websocket`;
 
-    // Immediate REST fetch to quickly populate entities
+    // Immediate REST fetch to quickly populate entities without waiting
     if (config.token) {
       fetch(`${httpProtocol}://${cleanHost}/api/states`, {
         headers: {
@@ -80,6 +145,7 @@ class HAWebSocketClient {
       };
 
       this.ws.onclose = () => {
+        this.stopPingHeartbeat();
         this.notifyStatus('disconnected');
         if (!this.isIntentionalClose) {
           this.scheduleReconnect();
@@ -94,6 +160,7 @@ class HAWebSocketClient {
 
   public disconnect() {
     this.isIntentionalClose = true;
+    this.stopPingHeartbeat();
     if (this.reconnectTimer) {
       window.clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -117,8 +184,12 @@ class HAWebSocketClient {
       });
     } else if (msg.type === 'auth_ok') {
       this.notifyStatus('connected');
+      this.reconnectAttempts = 0;
+      this.startPingHeartbeat();
       this.fetchInitialStates();
       this.subscribeEvents();
+    } else if (msg.type === 'pong') {
+      this.lastPongTimestamp = Date.now();
     } else if (msg.type === 'auth_invalid') {
       this.notifyStatus('auth_failed');
     } else if (msg.type === 'event' && msg.event?.event_type === 'state_changed') {
@@ -228,12 +299,14 @@ class HAWebSocketClient {
 
   private scheduleReconnect() {
     if (this.reconnectTimer) return;
+    this.reconnectAttempts++;
+    const delay = Math.min(2000 * Math.pow(1.5, Math.min(this.reconnectAttempts, 4)), 10000);
     this.reconnectTimer = window.setTimeout(() => {
       this.reconnectTimer = null;
       if (this.config && !this.isIntentionalClose) {
         this.connect(this.config);
       }
-    }, 5000);
+    }, delay);
   }
 
   public onStateChange(cb: StateChangeCallback) {

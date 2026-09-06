@@ -5,13 +5,19 @@ import { storageService } from '../services/storageService';
 import { INITIAL_MOCK_ENTITIES } from '../services/mockData';
 
 export function useHomeAssistant() {
-  const [entities, setEntities] = useState<Record<string, HAEntityState>>(INITIAL_MOCK_ENTITIES);
-  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'auth_failed'>('connected');
-  const [config, setConfig] = useState<HAConnectionConfig>(storageService.getHAConfig());
+  const initialConfig = storageService.getHAConfig();
+  const [entities, setEntities] = useState<Record<string, HAEntityState>>(
+    initialConfig.useDemoMode ? INITIAL_MOCK_ENTITIES : {}
+  );
+  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'auth_failed'>('connecting');
+  const [config, setConfig] = useState<HAConnectionConfig>(initialConfig);
 
   useEffect(() => {
-    // Populate with initial entities
-    haWebSocket.setEntities(INITIAL_MOCK_ENTITIES);
+    // Only populate with mock entities if user explicitly chose demo mode
+    if (config.useDemoMode) {
+      haWebSocket.setEntities(INITIAL_MOCK_ENTITIES);
+      setEntities(INITIAL_MOCK_ENTITIES);
+    }
 
     // Listen to real-time state changes
     const unsubState = haWebSocket.onStateChange((entityId, newState) => {

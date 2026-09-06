@@ -4,6 +4,7 @@ import { WeatherData } from '../../types/dashboard';
 
 interface OneUIHeaderProps {
   userName?: string;
+  title?: string;
   subtitle?: string;
   weather?: WeatherData;
   activeDevicesCount: number;
@@ -17,6 +18,7 @@ interface OneUIHeaderProps {
 
 export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   userName = 'Bruno',
+  title,
   subtitle,
   weather,
   activeDevicesCount,
@@ -146,7 +148,7 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
             </div>
             {/* Dynamic greeting with user's name */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white">
-              {getGreeting()}
+              {title || getGreeting()}
             </h1>
             <p className="text-sm md:text-base text-slate-400 mt-1.5 font-normal">
               {subtitle || `${activeDevicesCount} aparelhos ativos no momento`}
