@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { HAConnectionConfig } from '../../types/homeAssistant';
 import { ThemeConfig, ThemePreset } from '../../types/dashboard';
-import { PlatformMode } from '../../hooks/usePlatform';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -36,8 +35,6 @@ interface SettingsModalProps {
   onExportLayout: () => void;
   onImportLayout: (json: string) => boolean;
   onResetLayout: () => void;
-  platformMode?: PlatformMode;
-  onSelectPlatformMode?: (mode: PlatformMode) => void;
 }
 
 const THEME_PRESETS: { id: ThemePreset; name: string; desc: string }[] = [
@@ -72,8 +69,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onExportLayout,
   onImportLayout,
   onResetLayout,
-  platformMode = 'auto',
-  onSelectPlatformMode,
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'ha' | 'theme' | 'widgets' | 'backup'>('profile');
   const [nameInput, setNameInput] = useState(userName);
@@ -334,58 +329,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* TAB 2: THEME & ONE UI STYLE */}
           {activeTab === 'theme' && (
             <div className="space-y-5">
-              {/* Platform Design Selector */}
-              {onSelectPlatformMode && (
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                    Design da Interface por Plataforma
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onSelectPlatformMode('auto')}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
-                        platformMode === 'auto'
-                          ? 'bg-blue-600/25 border-blue-500 text-white shadow-lg'
-                          : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      <Sparkles size={18} className="mx-auto mb-1 text-blue-400" />
-                      <div className="text-xs font-semibold">Automático</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">Detecta SO</div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => onSelectPlatformMode('gnome')}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
-                        platformMode === 'gnome'
-                          ? 'bg-blue-600/25 border-blue-500 text-white shadow-lg'
-                          : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      <Monitor size={18} className="mx-auto mb-1 text-sky-400" />
-                      <div className="text-xs font-semibold">GNOME 50</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">Libadwaita</div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => onSelectPlatformMode('oneui')}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
-                        platformMode === 'oneui'
-                          ? 'bg-blue-600/25 border-blue-500 text-white shadow-lg'
-                          : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      <Smartphone size={18} className="mx-auto mb-1 text-purple-400" />
-                      <div className="text-xs font-semibold">One UI 9</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">Samsung</div>
-                    </button>
-                  </div>
-                </div>
-              )}
-
               {/* Presets */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">

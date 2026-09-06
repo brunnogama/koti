@@ -1,6 +1,9 @@
 const { app, BrowserWindow, shell, nativeTheme } = require('electron');
 const path = require('path');
 
+// Fix Linux Wayland + Vulkan compatibility warning
+app.commandLine.appendSwitch('disable-features', 'Vulkan');
+
 let mainWindow = null;
 
 function createWindow() {
@@ -12,7 +15,7 @@ function createWindow() {
     minWidth: 420,
     minHeight: 600,
     title: 'Koti',
-    backgroundColor: '#242424',
+    backgroundColor: '#0d0f12',
     icon: path.join(__dirname, '../build/icon.png'),
     webPreferences: {
       nodeIntegration: false,
