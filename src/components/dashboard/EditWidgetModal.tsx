@@ -164,19 +164,19 @@ export const EditWidgetModal: React.FC<EditWidgetModalProps> = ({
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               Tamanho do Card
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['1x1', '2x1', '2x2'] as WidgetSize[]).map((s) => (
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+              {(['pill', '1x1', '2x1', '2x2'] as WidgetSize[]).map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setSize(s)}
-                  className={`py-2.5 rounded-2xl text-xs font-semibold border transition-all ${
+                  className={`py-2.5 px-1 rounded-2xl text-[11px] font-semibold border transition-all text-center ${
                     size === s
                       ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30'
                       : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                   }`}
                 >
-                  {s === '1x1' ? '1x1 Quadrado' : s === '2x1' ? '2x1 Retangular' : '2x2 Expandido'}
+                  {s === 'pill' ? 'Pílula' : s === '1x1' ? '1x1 Card' : s === '2x1' ? '2x1 Barra' : '2x2 Amplo'}
                 </button>
               ))}
             </div>

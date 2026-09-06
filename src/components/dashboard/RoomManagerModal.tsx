@@ -1,5 +1,33 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2, Sofa, Bed, Utensils, Monitor, Bath, Tv, Trees } from 'lucide-react';
+import {
+  X,
+  Plus,
+  Trash2,
+  Sofa,
+  Armchair,
+  Bed,
+  BedDouble,
+  Utensils,
+  UtensilsCrossed,
+  Wine,
+  Coffee,
+  Monitor,
+  Laptop,
+  Briefcase,
+  Shirt,
+  Sparkles,
+  Bath,
+  ShowerHead,
+  Tv,
+  Car,
+  Trees,
+  Sun,
+  Flower2,
+  DoorOpen,
+  Key,
+  Waves,
+  Dumbbell,
+} from 'lucide-react';
 import { RoomConfig } from '../../types/dashboard';
 
 interface RoomManagerModalProps {
@@ -11,13 +39,30 @@ interface RoomManagerModalProps {
 }
 
 const AVAILABLE_ICONS = [
-  { name: 'Sofa', label: 'Sala', Icon: Sofa },
-  { name: 'Bed', label: 'Quarto', Icon: Bed },
+  { name: 'Sofa', label: 'Sala de Estar', Icon: Sofa },
+  { name: 'Armchair', label: 'Poltrona', Icon: Armchair },
+  { name: 'Tv', label: 'TV / Cinema', Icon: Tv },
+  { name: 'UtensilsCrossed', label: 'Sala de Jantar', Icon: UtensilsCrossed },
   { name: 'Utensils', label: 'Cozinha', Icon: Utensils },
+  { name: 'Coffee', label: 'Café', Icon: Coffee },
+  { name: 'Wine', label: 'Adega / Bar', Icon: Wine },
   { name: 'Monitor', label: 'Escritório', Icon: Monitor },
+  { name: 'Laptop', label: 'Trabalho', Icon: Laptop },
+  { name: 'Briefcase', label: 'Gabinete', Icon: Briefcase },
+  { name: 'Shirt', label: 'Lavanderia', Icon: Shirt },
+  { name: 'Sparkles', label: 'Área Serviço', Icon: Sparkles },
+  { name: 'Bed', label: 'Quarto', Icon: Bed },
+  { name: 'BedDouble', label: 'Quarto Casal', Icon: BedDouble },
   { name: 'Bath', label: 'Banheiro', Icon: Bath },
-  { name: 'Tv', label: 'Home Theater', Icon: Tv },
+  { name: 'ShowerHead', label: 'Ducha', Icon: ShowerHead },
+  { name: 'Car', label: 'Garagem', Icon: Car },
   { name: 'Trees', label: 'Jardim', Icon: Trees },
+  { name: 'Sun', label: 'Varanda', Icon: Sun },
+  { name: 'Flower2', label: 'Quintal', Icon: Flower2 },
+  { name: 'DoorOpen', label: 'Entrada / Hall', Icon: DoorOpen },
+  { name: 'Key', label: 'Acesso', Icon: Key },
+  { name: 'Waves', label: 'Piscina', Icon: Waves },
+  { name: 'Dumbbell', label: 'Academia', Icon: Dumbbell },
 ];
 
 export const RoomManagerModal: React.FC<RoomManagerModalProps> = ({
@@ -92,17 +137,20 @@ export const RoomManagerModal: React.FC<RoomManagerModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-400 mb-2">Ícone:</label>
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-              {AVAILABLE_ICONS.map(({ name, Icon }) => (
+            <label className="block text-xs text-slate-400 mb-2">
+              Ícone: <span className="text-white font-medium">{AVAILABLE_ICONS.find((i) => i.name === selectedIcon)?.label}</span>
+            </label>
+            <div className="grid grid-cols-6 gap-2 max-h-36 overflow-y-auto no-scrollbar p-2 rounded-2xl bg-white/5 border border-white/10">
+              {AVAILABLE_ICONS.map(({ name, label, Icon }) => (
                 <button
                   key={name}
                   type="button"
                   onClick={() => setSelectedIcon(name)}
-                  className={`p-3 rounded-2xl border transition-all ${
+                  title={label}
+                  className={`p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all ${
                     selectedIcon === name
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105'
+                      : 'bg-white/5 border-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <Icon size={18} />

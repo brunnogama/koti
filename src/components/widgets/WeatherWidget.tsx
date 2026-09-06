@@ -72,6 +72,53 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     return <Sun size={28} className="text-amber-400" />;
   };
 
+  const isPill = config.size === 'pill';
+
+  if (isPill) {
+    return (
+      <OneUICard
+        size={config.size}
+        isActive={false}
+        activeGlowColor={accentColor}
+        isEditMode={isEditMode}
+        isFavorite={config.isFavorite}
+        onToggleFavorite={onToggleFavorite}
+        onResize={onResize}
+        onMovePrev={onMovePrev}
+        onMoveNext={onMoveNext}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      >
+        <div className="w-full h-full flex items-center justify-between gap-2.5">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              backgroundColor: `${accentColor}25`,
+              color: accentColor,
+            }}
+          >
+            {getWeatherIcon(weather.conditionCode, weather.isDay)}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <span className="block text-xs font-medium text-white truncate">{weather.cityName}</span>
+            <span className="block text-[10px] text-slate-400 truncate">{weather.conditionText}</span>
+          </div>
+
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+            style={{
+              backgroundColor: `${accentColor}25`,
+              color: accentColor,
+            }}
+          >
+            {weather.temperature}°C
+          </span>
+        </div>
+      </OneUICard>
+    );
+  }
+
   return (
     <OneUICard
       size={config.size}

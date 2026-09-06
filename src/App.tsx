@@ -145,9 +145,9 @@ export function App() {
     }
   }, [layout.theme]);
 
-  // Cycle widget size: 1x1 -> 2x1 -> 2x2 -> 1x1
+  // Cycle widget size: pill -> 1x1 -> 2x1 -> 2x2 -> pill
   const cycleWidgetSize = (w: WidgetConfig) => {
-    const nextSize = w.size === '1x1' ? '2x1' : w.size === '2x1' ? '2x2' : '1x1';
+    const nextSize = w.size === 'pill' ? '1x1' : w.size === '1x1' ? '2x1' : w.size === '2x1' ? '2x2' : 'pill';
     updateWidgetSize(w.id, nextSize);
   };
 

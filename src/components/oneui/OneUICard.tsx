@@ -43,19 +43,23 @@ export const OneUICard: React.FC<OneUICardProps> = ({
       ? 'col-span-2 row-span-2'
       : 'col-span-1';
 
+  const isPill = size === 'pill';
+
   return (
     <div
       onClick={!isEditMode ? onClick : undefined}
-      className={`relative group rounded-[28px] p-5 transition-all duration-300 select-none overflow-hidden outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 tv-focusable ${colSpanClass} ${
+      className={`relative group transition-all duration-300 select-none overflow-hidden outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 tv-focusable ${colSpanClass} ${
+        isPill ? 'rounded-[22px] p-3 min-h-[64px]' : 'rounded-[28px] p-5 min-h-[140px]'
+      } ${
         isActive
-          ? 'bg-slate-900/70 border-white/15'
-          : 'bg-slate-950/40 border-white/10'
+          ? 'bg-slate-900/75 border-white/15'
+          : 'bg-slate-950/45 border-white/10'
       } backdrop-blur-2xl border shadow-xl hover:border-white/25 hover:shadow-2xl active:scale-[0.98] ${className}`}
       tabIndex={0}
     >
       {/* Edit Mode Overlay Toolbar */}
       {isEditMode && (
-        <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5 bg-neutral-900/90 backdrop-blur-md px-2 py-1.5 rounded-full border border-white/20 shadow-lg">
+        <div className={`absolute ${isPill ? 'top-1.5 right-1.5' : 'top-2.5 right-2.5'} z-30 flex items-center gap-1 bg-neutral-900/95 backdrop-blur-md px-1.5 py-1 rounded-full border border-white/20 shadow-lg`}>
           {onToggleFavorite && (
             <button
               onClick={(e) => {
@@ -139,7 +143,7 @@ export const OneUICard: React.FC<OneUICardProps> = ({
       )}
 
       {/* Card Content */}
-      <div className="h-full flex flex-col justify-between">{children}</div>
+      <div className={`h-full w-full ${isPill ? 'flex items-center' : 'flex flex-col justify-between'}`}>{children}</div>
     </div>
   );
 };

@@ -34,11 +34,72 @@ export const SceneWidget: React.FC<SceneWidgetProps> = ({
   const name = config.customName || entity?.attributes?.friendly_name || 'Cenário';
   const accentColor = config.customColor || '#8B5CF6';
 
+  const isPill = config.size === 'pill';
+
+  const triggerHaptic = () => {
+    try {
+      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(25);
+      }
+    } catch (_) {}
+  };
+
   const handleClick = () => {
+    triggerHaptic();
     onTrigger();
     setTriggered(true);
     setTimeout(() => setTriggered(false), 2000);
   };
+
+  if (isPill) {
+    return (
+      <OneUICard
+        size={config.size}
+        isActive={triggered}
+        activeGlowColor={accentColor}
+        isEditMode={isEditMode}
+        isFavorite={config.isFavorite}
+        onToggleFavorite={onToggleFavorite}
+        onResize={onResize}
+        onMovePrev={onMovePrev}
+        onMoveNext={onMoveNext}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onClick={handleClick}
+      >
+        <div className="w-full h-full flex items-center justify-between gap-2.5">
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
+              triggered ? 'scale-110 shadow-lg' : 'bg-white/5'
+            }`}
+            style={{
+              backgroundColor: triggered ? accentColor : `${accentColor}25`,
+              color: triggered ? '#FFFFFF' : accentColor,
+            }}
+          >
+            {triggered ? (
+              <Check size={18} />
+            ) : (
+              <DynamicIcon name={config.customIcon} defaultIcon={Sparkles} size={18} />
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <span className="block text-xs font-medium text-white truncate">{name}</span>
+            <span className="block text-[10px] text-slate-400 truncate">
+              {triggered ? 'Executado!' : 'Toque para acionar'}
+            </span>
+          </div>
+
+          <span
+            className="p-1.5 rounded-full bg-white/5 text-slate-400 shrink-0"
+          >
+            <Play size={12} fill="currentColor" />
+          </span>
+        </div>
+      </OneUICard>
+    );
+  }
 
   return (
     <OneUICard

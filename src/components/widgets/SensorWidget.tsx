@@ -62,6 +62,53 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
     statusText = isAlert ? 'Atenção' : 'Protegida';
   }
 
+  const isPill = config.size === 'pill';
+
+  if (isPill) {
+    return (
+      <OneUICard
+        size={config.size}
+        isActive={isAlert}
+        activeGlowColor={accentColor}
+        isEditMode={isEditMode}
+        isFavorite={config.isFavorite}
+        onToggleFavorite={onToggleFavorite}
+        onResize={onResize}
+        onMovePrev={onMovePrev}
+        onMoveNext={onMoveNext}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      >
+        <div className="w-full h-full flex items-center justify-between gap-2.5">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              backgroundColor: `${accentColor}25`,
+              color: accentColor,
+            }}
+          >
+            <DynamicIcon name={config.customIcon} defaultIcon={Icon} size={18} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <span className="block text-xs font-medium text-white truncate">{name}</span>
+            <span className="block text-[10px] text-slate-400 truncate">{statusText}</span>
+          </div>
+
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+            style={{
+              backgroundColor: `${accentColor}25`,
+              color: accentColor,
+            }}
+          >
+            {displayValue}
+          </span>
+        </div>
+      </OneUICard>
+    );
+  }
+
   return (
     <OneUICard
       size={config.size}

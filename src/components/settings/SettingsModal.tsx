@@ -601,6 +601,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           )}
         </div>
+
+        {/* Version info footer */}
+        <div className="px-6 py-3 border-t border-white/5 bg-white/[0.02] flex items-center justify-between text-[11px] text-slate-500">
+          <span>Koti Smart Home • One UI 9</span>
+          <span className="font-mono">v1.0.2</span>
+        </div>
       </div>
     </div>
   );

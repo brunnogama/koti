@@ -38,6 +38,63 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
   const name = config.customName || entity?.attributes?.friendly_name || 'Climatização';
   const accentColor = config.customColor || '#06B6D4';
 
+  const isPill = config.size === 'pill';
+
+  if (isPill) {
+    return (
+      <OneUICard
+        size={config.size}
+        isActive={!isOff}
+        activeGlowColor={accentColor}
+        isEditMode={isEditMode}
+        isFavorite={config.isFavorite}
+        onToggleFavorite={onToggleFavorite}
+        onResize={onResize}
+        onMovePrev={onMovePrev}
+        onMoveNext={onMoveNext}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onClick={onTogglePower}
+      >
+        <div className="w-full h-full flex items-center justify-between gap-2.5">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all"
+            style={{
+              backgroundColor: !isOff ? `${accentColor}33` : 'rgba(255,255,255,0.05)',
+              color: !isOff ? accentColor : '#94A3B8',
+            }}
+          >
+            <DynamicIcon name={config.customIcon} defaultIcon={Wind} size={18} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <span className="block text-xs font-medium text-white truncate">{name}</span>
+            <span className="block text-[10px] text-slate-400 truncate">
+              {!isOff ? `Atual ${currentTemp}°C` : 'Desligado'}
+            </span>
+          </div>
+
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+            style={
+              !isOff
+                ? {
+                    backgroundColor: `${accentColor}25`,
+                    color: accentColor,
+                  }
+                : {
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    color: '#64748B',
+                  }
+            }
+          >
+            {!isOff ? `${targetTemp}°C` : 'Off'}
+          </span>
+        </div>
+      </OneUICard>
+    );
+  }
+
   return (
     <OneUICard
       size={config.size}

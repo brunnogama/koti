@@ -34,6 +34,77 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
   const name = config.customName || entity?.attributes?.friendly_name || 'Tomada';
   const accentColor = config.customColor || '#10B981';
 
+  const isPill = config.size === 'pill';
+
+  const triggerHaptic = () => {
+    try {
+      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(18);
+      }
+    } catch (_) {}
+  };
+
+  const handleToggle = () => {
+    triggerHaptic();
+    onToggle();
+  };
+
+  if (isPill) {
+    return (
+      <OneUICard
+        size={config.size}
+        isActive={isOn}
+        activeGlowColor={accentColor}
+        isEditMode={isEditMode}
+        isFavorite={config.isFavorite}
+        onToggleFavorite={onToggleFavorite}
+        onResize={onResize}
+        onMovePrev={onMovePrev}
+        onMoveNext={onMoveNext}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onClick={handleToggle}
+      >
+        <div className="w-full h-full flex items-center justify-between gap-2.5">
+          {/* Icon */}
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
+              isOn ? 'shadow-md' : 'bg-white/5 text-slate-400'
+            }`}
+            style={
+              isOn
+                ? {
+                    backgroundColor: `${accentColor}33`,
+                    color: accentColor,
+                  }
+                : undefined
+            }
+          >
+            <DynamicIcon name={config.customIcon} defaultIcon={Power} size={18} />
+          </div>
+
+          {/* Name and State */}
+          <div className="flex-1 min-w-0">
+            <span className="block text-xs font-medium text-white truncate">{name}</span>
+            <span className="block text-[10px] text-slate-400 truncate">
+              {isOn ? 'Ligado' : 'Desligado'}
+            </span>
+          </div>
+
+          {/* One UI Toggle Pill */}
+          <div
+            className={`w-9 h-5 rounded-full p-0.5 transition-colors shrink-0 flex items-center ${
+              isOn ? 'bg-emerald-500 justify-end' : 'bg-white/10 justify-start'
+            }`}
+            style={isOn ? { backgroundColor: accentColor } : undefined}
+          >
+            <div className="w-4 h-4 rounded-full bg-white shadow-sm" />
+          </div>
+        </div>
+      </OneUICard>
+    );
+  }
+
   return (
     <OneUICard
       size={config.size}
@@ -47,7 +118,7 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
       onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
-      onClick={onToggle}
+      onClick={handleToggle}
     >
       <div>
         <div className="flex items-center justify-between mb-2">

@@ -1,4 +1,4 @@
-export type WidgetSize = '1x1' | '2x1' | '2x2';
+export type WidgetSize = 'pill' | '1x1' | '2x1' | '2x2';
 
 export interface WidgetConfig {
   id: string;
