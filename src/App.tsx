@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useHomeAssistant } from './hooks/useHomeAssistant';
 import { useDeviceType } from './hooks/useDeviceType';
 import { useDashboardStore } from './hooks/useDashboardStore';
+import { weatherService } from './services/weatherService';
 import { OneUIHeader } from './components/oneui/OneUIHeader';
 import { OneUIPill } from './components/oneui/OneUIPill';
 import { BottomNav } from './components/oneui/BottomNav';
@@ -10,12 +11,13 @@ import { SwitchWidget } from './components/widgets/SwitchWidget';
 import { SensorWidget } from './components/widgets/SensorWidget';
 import { ClimateWidget } from './components/widgets/ClimateWidget';
 import { SceneWidget } from './components/widgets/SceneWidget';
+import { WeatherWidget } from './components/widgets/WeatherWidget';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { EditWidgetModal } from './components/dashboard/EditWidgetModal';
 import { AddWidgetModal } from './components/dashboard/AddWidgetModal';
 import { RoomManagerModal } from './components/dashboard/RoomManagerModal';
 import { WallClockAmbient } from './components/dashboard/WallClockAmbient';
-import { WidgetConfig } from './types/dashboard';
+import { WidgetConfig, WeatherData } from './types/dashboard';
 import { Plus } from 'lucide-react';
 
 export function App() {
@@ -29,7 +31,7 @@ export function App() {
     setTemperature,
   } = useHomeAssistant();
 
-  const { isMobile, isTablet, isTV, isTVModeForced, toggleForceTVMode } = useDeviceType();
+  const { isMobile, isTablet, isTV, toggleForceTVMode } = useDeviceType();
 
   const {
     layout,
@@ -48,8 +50,39 @@ export function App() {
     addRoom,
     removeRoom,
     updateTheme,
+    updateUserConfig,
     resetToDefault,
   } = useDashboardStore();
+
+  // Weather state
+  const [weather, setWeather] = useState<WeatherData>({
+    temperature: 24,
+    apparentTemperature: 25,
+    conditionCode: 2,
+    conditionText: 'Parcialmente Nublado',
+    cityName: layout.city || 'Sua Região',
+    humidity: 62,
+    windSpeed: 14,
+    tempMax: 28,
+    tempMin: 19,
+    isDay: true,
+  });
+
+  const fetchWeather = async () => {
+    try {
+      const data = await weatherService.getWeather(layout.city);
+      setWeather(data);
+    } catch (e) {
+      console.warn('Could not refresh weather', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather();
+    // Refresh weather every 20 minutes
+    const interval = setInterval(fetchWeather, 20 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [layout.city]);
 
   // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -156,14 +189,16 @@ export function App() {
       {isScreensaverActive && (
         <WallClockAmbient
           activeLightsCount={activeLightsCount}
+          weather={weather}
           onDismiss={() => setIsScreensaverActive(false)}
         />
       )}
 
-      {/* Main Header in Samsung One UI Style */}
+      {/* Main Header in Samsung One UI Style with Dynamic Greeting & Weather */}
       <OneUIHeader
-        title="Koti Home"
-        subtitle={`${currentRoom.name} • ${activeCount} ativos`}
+        userName={layout.userName}
+        subtitle={`${currentRoom.name} • ${activeCount} aparelhos ativos`}
+        weather={weather}
         activeDevicesCount={activeCount}
         connectionStatus={connectionStatus}
         isEditMode={isEditMode}
@@ -196,6 +231,24 @@ export function App() {
           {currentWidgets.map((w) => {
             const entity = entities[w.entityId];
             const domain = w.entityId.split('.')[0];
+
+            if (domain === 'weather') {
+              return (
+                <WeatherWidget
+                  key={w.id}
+                  config={w}
+                  weather={weather}
+                  isEditMode={isEditMode}
+                  onRefresh={fetchWeather}
+                  onResize={() => cycleWidgetSize(w)}
+                  onMovePrev={() => moveWidget(w.id, 'prev')}
+                  onMoveNext={() => moveWidget(w.id, 'next')}
+                  onToggleFavorite={() => toggleFavorite(w.id)}
+                  onEdit={() => setEditingWidget(w)}
+                  onDelete={() => removeWidget(w.id)}
+                />
+              );
+            }
 
             if (domain === 'light') {
               return (
@@ -331,6 +384,9 @@ export function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        userName={layout.userName}
+        city={layout.city}
+        onUpdateUser={updateUserConfig}
         haConfig={haConfig}
         onSaveHAConfig={onSaveHAConfig}
         theme={layout.theme}

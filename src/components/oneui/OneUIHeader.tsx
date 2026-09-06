@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Edit3, Check, Tv, Wifi, WifiOff } from 'lucide-react';
+import { Settings, Edit3, Check, Tv, Wifi, WifiOff, Sun, CloudSun, CloudRain, Cloud } from 'lucide-react';
+import { WeatherData } from '../../types/dashboard';
 
 interface OneUIHeaderProps {
-  title: string;
+  userName?: string;
   subtitle?: string;
+  weather?: WeatherData;
   activeDevicesCount: number;
   connectionStatus: 'disconnected' | 'connecting' | 'connected' | 'auth_failed';
   isEditMode: boolean;
@@ -14,8 +16,9 @@ interface OneUIHeaderProps {
 }
 
 export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
-  title,
+  userName = 'Bruno',
   subtitle,
+  weather,
   activeDevicesCount,
   connectionStatus,
   isEditMode,
@@ -44,34 +47,58 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return `Bom dia, ${userName}!`;
+    if (hour >= 12 && hour < 18) return `Boa tarde, ${userName}!`;
+    return `Boa noite, ${userName}!`;
+  };
+
+  const getWeatherIcon = (code?: number) => {
+    if (code === undefined || code === 0 || code === 1) return <Sun size={15} className="text-amber-400" />;
+    if (code === 2) return <CloudSun size={15} className="text-amber-300" />;
+    if (code >= 61) return <CloudRain size={15} className="text-blue-400" />;
+    return <Cloud size={15} className="text-slate-300" />;
+  };
+
   return (
     <header className="relative w-full pt-8 pb-4 px-6 md:px-10 transition-all duration-300">
       {/* Top action row */}
       <div className="flex items-center justify-between mb-4">
-        {/* Connection status pill */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">
-          {connectionStatus === 'connected' ? (
-            <>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <Wifi size={14} className="text-emerald-400" />
-              <span className="text-emerald-300">Online</span>
-            </>
-          ) : connectionStatus === 'connecting' ? (
-            <>
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-              <span className="text-amber-300">Conectando...</span>
-            </>
-          ) : (
-            <>
-              <WifiOff size={14} className="text-rose-400" />
-              <span className="text-rose-300">Desconectado</span>
-            </>
+        {/* Left: Connection status + Weather Pill */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">
+            {connectionStatus === 'connected' ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <Wifi size={14} className="text-emerald-400" />
+                <span className="text-emerald-300">Online</span>
+              </>
+            ) : connectionStatus === 'connecting' ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                <span className="text-amber-300">Conectando...</span>
+              </>
+            ) : (
+              <>
+                <WifiOff size={14} className="text-rose-400" />
+                <span className="text-rose-300">Desconectado</span>
+              </>
+            )}
+          </div>
+
+          {weather && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium text-slate-300">
+              {getWeatherIcon(weather.conditionCode)}
+              <span>{weather.temperature}°C</span>
+              <span className="hidden sm:inline text-slate-400">• {weather.cityName}</span>
+            </div>
           )}
         </div>
 
         {/* Right controls */}
         <div className="flex items-center gap-2">
-          {/* TV Mode Toggle button (allows testing Android TV D-Pad experience anywhere) */}
+          {/* TV Mode Toggle button */}
           <button
             onClick={onToggleTVMode}
             title={isTV ? "Modo TV Ativo (Navegação D-Pad)" : "Ativar Modo TV"}
@@ -110,6 +137,7 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
           <button
             onClick={onOpenSettings}
             className="p-2.5 rounded-full oneui-glass text-slate-300 hover:text-white transition-all duration-200 hover:rotate-45"
+            title="Ajustes"
           >
             <Settings size={18} />
           </button>
@@ -122,8 +150,9 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
           <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold capitalize">
             {dateStr}
           </div>
+          {/* Dynamic greeting with user's name */}
           <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mt-1">
-            {title}
+            {getGreeting()}
           </h1>
           <p className="text-sm md:text-base text-slate-400 mt-1 font-normal">
             {subtitle || `${activeDevicesCount} aparelhos ativos no momento`}

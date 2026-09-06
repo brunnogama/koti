@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Sun, Lightbulb, Sparkles } from 'lucide-react';
+import { ShieldCheck, Sun, Lightbulb, Sparkles, CloudSun, CloudRain, Cloud } from 'lucide-react';
+import { WeatherData } from '../../types/dashboard';
 
 interface WallClockAmbientProps {
   onDismiss: () => void;
   activeLightsCount: number;
+  weather?: WeatherData;
 }
 
 export const WallClockAmbient: React.FC<WallClockAmbientProps> = ({
   onDismiss,
   activeLightsCount,
+  weather,
 }) => {
   const [time, setTime] = useState<string>('');
   const [seconds, setSeconds] = useState<string>('');
@@ -52,10 +55,13 @@ export const WallClockAmbient: React.FC<WallClockAmbientProps> = ({
           </span>
           <span className="flex items-center gap-1.5">
             <Sun size={16} className="text-amber-400" />
-            24°C Parcialmente Nublado
+            {weather
+              ? `${weather.temperature}°C ${weather.conditionText} • ${weather.cityName}`
+              : '24°C Parcialmente Nublado'}
           </span>
         </div>
       </div>
+
 
       {/* Big Minimalist One UI Clock */}
       <div className="text-center my-auto">

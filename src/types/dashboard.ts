@@ -28,8 +28,23 @@ export interface ThemeConfig {
   accentColor: string; // One UI Blue (#2C75FF), Amber (#FFB020), Emerald (#10B981), etc.
 }
 
+export interface WeatherData {
+  temperature: number;
+  apparentTemperature?: number;
+  conditionCode: number;
+  conditionText: string;
+  cityName: string;
+  humidity: number;
+  windSpeed: number;
+  tempMax?: number;
+  tempMin?: number;
+  isDay?: boolean;
+}
+
 export interface DashboardLayout {
   version: number;
+  userName: string;
+  city?: string;
   rooms: RoomConfig[];
   widgets: WidgetConfig[];
   theme: ThemeConfig;

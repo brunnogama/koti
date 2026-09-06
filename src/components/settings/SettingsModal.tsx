@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { X, Server, Palette, Download, Upload, RotateCcw, Check, Sparkles, Sliders } from 'lucide-react';
+import { X, Server, Palette, Download, Upload, RotateCcw, Check, Sparkles, Sliders, User, MapPin } from 'lucide-react';
 import { HAConnectionConfig } from '../../types/homeAssistant';
 import { ThemeConfig, ThemePreset } from '../../types/dashboard';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userName: string;
+  city?: string;
+  onUpdateUser: (name: string, city?: string) => void;
   haConfig: HAConnectionConfig;
   onSaveHAConfig: (config: HAConnectionConfig) => void;
   theme: ThemeConfig;
@@ -37,6 +40,9 @@ const ACCENT_COLORS = [
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
+  userName,
+  city,
+  onUpdateUser,
   haConfig,
   onSaveHAConfig,
   theme,
@@ -47,7 +53,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onImportLayout,
   onResetLayout,
 }) => {
-  const [activeTab, setActiveTab] = useState<'ha' | 'theme' | 'backup'>('ha');
+  const [activeTab, setActiveTab] = useState<'profile' | 'ha' | 'theme' | 'backup'>('profile');
+  const [nameInput, setNameInput] = useState(userName);
+  const [cityInput, setCityInput] = useState(city || '');
   const [host, setHost] = useState(haConfig.host);
   const [token, setToken] = useState(haConfig.token);
   const [demoMode, setDemoMode] = useState(haConfig.useDemoMode);
@@ -56,6 +64,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   if (!isOpen) return null;
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    onUpdateUser(nameInput, cityInput);
+    onClose();
+  };
 
   const handleSaveConnection = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +91,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }
   };
 
+  const hour = new Date().getHours();
+  const greetingPreview =
+    hour >= 5 && hour < 12
+      ? `Bom dia, ${nameInput || 'Bruno'}!`
+      : hour >= 12 && hour < 18
+      ? `Boa tarde, ${nameInput || 'Bruno'}!`
+      : `Boa noite, ${nameInput || 'Bruno'}!`;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-lg select-none">
       <div className="w-full max-w-xl oneui-glass rounded-[32px] p-6 md:p-8 shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
@@ -95,10 +117,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mt-4 p-1 rounded-2xl bg-white/5 border border-white/10">
+        <div className="flex items-center gap-1.5 mt-4 p-1 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === 'profile'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <User size={14} />
+            <span>Perfil</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('ha')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-w-[110px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'ha'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'text-slate-400 hover:text-white'
@@ -110,7 +144,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <button
             onClick={() => setActiveTab('theme')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'theme'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'text-slate-400 hover:text-white'
@@ -122,19 +156,72 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <button
             onClick={() => setActiveTab('backup')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'backup'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
             <Download size={14} />
-            <span>Backup & Sync</span>
+            <span>Backup</span>
           </button>
         </div>
 
         {/* Tab Body */}
         <div className="mt-6 flex-1 overflow-y-auto space-y-6 pr-1">
+          {/* TAB 0: PROFILE & WEATHER LOCATION */}
+          {activeTab === 'profile' && (
+            <form onSubmit={handleSaveProfile} className="space-y-5">
+              {/* Greeting Live Preview Card */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-900/40 to-slate-900/60 border border-blue-500/30">
+                <span className="text-[11px] uppercase tracking-wider text-blue-300 font-semibold">
+                  Prévia da Saudação Dinâmica
+                </span>
+                <div className="text-2xl font-light text-white mt-1">{greetingPreview}</div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Muda automaticamente ao longo do dia (Bom dia, Boa tarde, Boa noite).
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Seu Nome
+                </label>
+                <input
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  placeholder="Ex: Bruno"
+                  className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <MapPin size={13} className="text-cyan-400" />
+                  Cidade / Região (Meteorologia)
+                </label>
+                <input
+                  type="text"
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  placeholder="Ex: São Paulo, Curitiba, Belo Horizonte (ou deixe em branco para GPS)"
+                  className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Se deixar vazio, o Koti buscará a previsão com base na localização atual do seu aparelho.
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 rounded-2xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/40 transition-all"
+              >
+                Salvar Perfil e Localização
+              </button>
+            </form>
+          )}
+
           {/* TAB 1: HOME ASSISTANT CONNECTION */}
           {activeTab === 'ha' && (
             <form onSubmit={handleSaveConnection} className="space-y-4">

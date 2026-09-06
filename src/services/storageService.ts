@@ -12,13 +12,36 @@ export const storageService = {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.LAYOUT);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        const hasWeather = parsed.widgets?.some((w: any) => w.entityId.startsWith('weather.'));
+        const widgets = hasWeather
+          ? parsed.widgets
+          : [
+              {
+                id: 'w_weather',
+                entityId: 'weather.local',
+                roomId: 'living_room',
+                size: '2x1',
+                order: 0,
+                isFavorite: true,
+                customColor: '#06B6D4',
+              },
+              ...parsed.widgets,
+            ];
+
+        return {
+          ...DEFAULT_DASHBOARD_LAYOUT,
+          ...parsed,
+          userName: parsed.userName || 'Bruno',
+          widgets,
+        };
       }
     } catch (e) {
       console.error('Failed to load dashboard layout from localStorage', e);
     }
     return DEFAULT_DASHBOARD_LAYOUT;
   },
+
 
   saveLayout(layout: DashboardLayout): void {
     try {

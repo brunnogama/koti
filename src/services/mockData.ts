@@ -148,6 +148,8 @@ export const INITIAL_MOCK_ENTITIES: Record<string, HAEntityState> = {
 
 export const DEFAULT_DASHBOARD_LAYOUT: DashboardLayout = {
   version: 1,
+  userName: 'Bruno',
+  city: '',
   rooms: [
     { id: 'favorites', name: 'Favoritos', icon: 'Star', order: 0 },
     { id: 'living_room', name: 'Sala de Estar', icon: 'Sofa', order: 1 },
@@ -156,17 +158,18 @@ export const DEFAULT_DASHBOARD_LAYOUT: DashboardLayout = {
     { id: 'kitchen', name: 'Cozinha', icon: 'Utensils', order: 4 },
   ],
   widgets: [
-    { id: 'w1', entityId: 'light.living_room_main', roomId: 'living_room', size: '2x1', order: 0, isFavorite: true, customColor: '#FFB020' },
-    { id: 'w2', entityId: 'light.living_room_strip', roomId: 'living_room', size: '1x1', order: 1, isFavorite: true, customColor: '#2C75FF' },
-    { id: 'w3', entityId: 'climate.living_room_ac', roomId: 'living_room', size: '2x2', order: 2, isFavorite: true, customColor: '#06B6D4' },
-    { id: 'w4', entityId: 'sensor.living_room_temperature', roomId: 'living_room', size: '1x1', order: 3, isFavorite: true },
-    { id: 'w5', entityId: 'sensor.living_room_humidity', roomId: 'living_room', size: '1x1', order: 4, isFavorite: false },
-    { id: 'w6', entityId: 'binary_sensor.front_door', roomId: 'living_room', size: '1x1', order: 5, isFavorite: true },
+    { id: 'w_weather', entityId: 'weather.local', roomId: 'living_room', size: '2x1', order: 0, isFavorite: true, customColor: '#06B6D4' },
+    { id: 'w1', entityId: 'light.living_room_main', roomId: 'living_room', size: '2x1', order: 1, isFavorite: true, customColor: '#FFB020' },
+    { id: 'w2', entityId: 'light.living_room_strip', roomId: 'living_room', size: '1x1', order: 2, isFavorite: true, customColor: '#2C75FF' },
+    { id: 'w3', entityId: 'climate.living_room_ac', roomId: 'living_room', size: '2x2', order: 3, isFavorite: true, customColor: '#06B6D4' },
+    { id: 'w4', entityId: 'sensor.living_room_temperature', roomId: 'living_room', size: '1x1', order: 4, isFavorite: true },
+    { id: 'w5', entityId: 'sensor.living_room_humidity', roomId: 'living_room', size: '1x1', order: 5, isFavorite: false },
+    { id: 'w6', entityId: 'binary_sensor.front_door', roomId: 'living_room', size: '1x1', order: 6, isFavorite: true },
     { id: 'w7', entityId: 'light.bedroom_ceiling', roomId: 'bedroom', size: '2x1', order: 0, isFavorite: false },
     { id: 'w8', entityId: 'light.bedroom_lamp', roomId: 'bedroom', size: '1x1', order: 1, isFavorite: true, customColor: '#F59E0B' },
     { id: 'w9', entityId: 'switch.desk_power', roomId: 'office', size: '1x1', order: 0, isFavorite: true },
     { id: 'w10', entityId: 'switch.coffee_maker', roomId: 'kitchen', size: '1x1', order: 0, isFavorite: true },
-    { id: 'w11', entityId: 'scene.movie_night', roomId: 'living_room', size: '1x1', order: 6, isFavorite: true, customColor: '#8B5CF6' },
+    { id: 'w11', entityId: 'scene.movie_night', roomId: 'living_room', size: '1x1', order: 7, isFavorite: true, customColor: '#8B5CF6' },
   ],
   theme: {
     preset: 'oneui-dark',
@@ -175,3 +178,4 @@ export const DEFAULT_DASHBOARD_LAYOUT: DashboardLayout = {
   },
   screensaverTimeoutMinutes: 5,
 };
+

@@ -150,6 +150,15 @@ export function useDashboardStore() {
     saveCurrentLayout(updated);
   }, [layout, saveCurrentLayout]);
 
+  const updateUserConfig = useCallback((userName: string, city?: string) => {
+    const updated = {
+      ...layout,
+      userName: userName.trim() || 'Bruno',
+      city: city !== undefined ? city.trim() : layout.city,
+    };
+    saveCurrentLayout(updated);
+  }, [layout, saveCurrentLayout]);
+
   const resetToDefault = useCallback(() => {
     const def = storageService.resetLayout();
     setLayout(def);
@@ -173,6 +182,8 @@ export function useDashboardStore() {
     addRoom,
     removeRoom,
     updateTheme,
+    updateUserConfig,
     resetToDefault,
   };
 }
+
