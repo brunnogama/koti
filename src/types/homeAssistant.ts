@@ -34,11 +34,15 @@ export interface HAEntityState {
   last_updated: string;
 }
 
+export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'auth_failed';
+
 export interface HAConnectionConfig {
   host: string; // e.g., '192.168.1.100:8123' or 'http://homeassistant.local:8123'
   token: string; // Long-Lived Access Token
   useDemoMode: boolean;
 }
+
+export type HAConfig = HAConnectionConfig;
 
 export interface HAWebSocketMessage {
   id?: number;

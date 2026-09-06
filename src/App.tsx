@@ -20,9 +20,12 @@ import { WidgetConfig, WeatherData } from './types/dashboard';
 import { RoomsView } from './components/views/RoomsView';
 import { ScenesView } from './components/views/ScenesView';
 import { MOCK_ENTITY_IDS } from './services/mockData';
+import { usePlatform } from './hooks/usePlatform';
+import { GnomeShell } from './components/gnome/GnomeShell';
 import { Plus } from 'lucide-react';
 
 export function App() {
+  const { platform, platformMode, setPlatformMode } = usePlatform();
   const {
     entities,
     connectionStatus,
@@ -204,6 +207,43 @@ export function App() {
     }
     return false;
   };
+
+  if (platform === 'gnome') {
+    return (
+      <GnomeShell
+        entities={entities}
+        connectionStatus={connectionStatus}
+        haConfig={haConfig}
+        onSaveHAConfig={onSaveHAConfig}
+        toggleEntity={toggleEntity}
+        setBrightness={setBrightness}
+        setTemperature={setTemperature}
+        layout={layout}
+        activeRoomId={activeRoomId}
+        setActiveRoomId={setActiveRoomId}
+        isEditMode={isEditMode}
+        setIsEditMode={setIsEditMode}
+        updateWidgetSize={(id) => {
+          const w = layout.widgets.find((item) => item.id === id);
+          if (w) cycleWidgetSize(w);
+        }}
+        reorderWidgets={reorderWidgets}
+        toggleFavorite={toggleFavorite}
+        updateWidgetConfig={updateWidgetConfig}
+        removeWidget={removeWidget}
+        addWidget={addWidget}
+        addRoom={addRoom}
+        updateRoom={updateRoom}
+        removeRoom={removeRoom}
+        updateUserConfig={updateUserConfig}
+        weather={weather}
+        fetchWeather={fetchWeather}
+        platformMode={platformMode}
+        activePlatform={platform}
+        setPlatformMode={setPlatformMode}
+      />
+    );
+  }
 
   return (
     <div
@@ -527,6 +567,8 @@ export function App() {
         onExportLayout={handleExportLayout}
         onImportLayout={handleImportLayout}
         onResetLayout={resetToDefault}
+        platformMode={platformMode}
+        onSelectPlatformMode={setPlatformMode}
       />
 
       {editingWidget && (

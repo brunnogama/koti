@@ -85,3 +85,113 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ==========================================================================
+   GNOME 50 / Libadwaita Design System (Dark Theme)
+   ========================================================================== */
+.theme-gnome {
+  --adw-window-bg: #242424;
+  --adw-view-bg: #1e1e1e;
+  --adw-headerbar-bg: #303030;
+  --adw-card-bg: rgba(255, 255, 255, 0.07);
+  --adw-card-hover: rgba(255, 255, 255, 0.11);
+  --adw-card-active: rgba(255, 255, 255, 0.15);
+  --adw-card-border: rgba(255, 255, 255, 0.08);
+  --adw-accent: #3584e4;
+  --adw-accent-hover: #438de6;
+  --adw-accent-active: #1c71d8;
+  --adw-destructive: #e01b24;
+  --adw-success: #2ec27e;
+  --adw-warning: #e5a50a;
+  --adw-text-primary: #ffffff;
+  --adw-text-dim: rgba(255, 255, 255, 0.7);
+  --adw-text-disabled: rgba(255, 255, 255, 0.35);
+  font-family: Cantarell, Inter, -apple-system, system-ui, sans-serif;
+  background-color: var(--adw-window-bg);
+  color: var(--adw-text-primary);
+}
+
+/* Adwaita Card Surface */
+.adw-card {
+  background-color: var(--adw-card-bg);
+  border: 1px solid var(--adw-card-border);
+  border-radius: 12px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.adw-card:hover {
+  background-color: var(--adw-card-hover);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.adw-card:active {
+  background-color: var(--adw-card-active);
+}
+
+/* Adwaita Action Row */
+.adw-action-row {
+  background-color: var(--adw-card-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s ease;
+}
+.adw-action-row:first-child {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.adw-action-row:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-bottom: none;
+}
+.adw-action-row:only-child {
+  border-radius: 12px;
+  border-bottom: none;
+}
+
+/* Adwaita Button Classes */
+.adw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.adw-btn-flat {
+  background: transparent;
+  color: var(--adw-text-primary);
+}
+.adw-btn-flat:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.adw-btn-flat:active, .adw-btn-flat.active {
+  background: rgba(255, 255, 255, 0.14);
+}
+.adw-btn-suggested {
+  background: var(--adw-accent);
+  color: #ffffff;
+}
+.adw-btn-suggested:hover {
+  background: var(--adw-accent-hover);
+}
+.adw-btn-suggested:active {
+  background: var(--adw-accent-active);
+}
+.adw-btn-destructive {
+  background: var(--adw-destructive);
+  color: #ffffff;
+}
+.adw-btn-pill {
+  border-radius: 9999px;
+}
+
+/* Window drag area for Electron */
+.window-drag-region {
+  -webkit-app-region: drag;
+}
+.window-no-drag {
+  -webkit-app-region: no-drag;
+}

@@ -3,7 +3,7 @@ import * as Icons from 'lucide-react';
 
 interface DynamicIconProps {
   name?: string;
-  defaultIcon: React.ComponentType<{ size?: number; className?: string }>;
+  defaultIcon?: React.ComponentType<{ size?: number; className?: string }>;
   size?: number;
   className?: string;
 }
@@ -14,16 +14,18 @@ export const DynamicIcon: React.FC<DynamicIconProps> = ({
   size = 24,
   className = '',
 }) => {
-  if (!name) {
+  if (name) {
+    const FoundIcon = (Icons as any)[name];
+    if (FoundIcon) {
+      return <FoundIcon size={size} className={className} />;
+    }
+  }
+
+  if (DefaultIcon) {
     return <DefaultIcon size={size} className={className} />;
   }
 
-  const FoundIcon = (Icons as any)[name];
-  if (FoundIcon) {
-    return <FoundIcon size={size} className={className} />;
-  }
-
-  return <DefaultIcon size={size} className={className} />;
+  return null;
 };
 
 export const GADGET_ICON_CATEGORIES = [

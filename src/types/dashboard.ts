@@ -50,3 +50,6 @@ export interface DashboardLayout {
   theme: ThemeConfig;
   screensaverTimeoutMinutes: number; // 0 = disabled
 }
+
+export type LayoutConfig = DashboardLayout;
+

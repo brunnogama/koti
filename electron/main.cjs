@@ -11,8 +11,8 @@ function createWindow() {
     height: 840,
     minWidth: 420,
     minHeight: 600,
-    title: 'Koti Smart Home',
-    backgroundColor: '#0d0f12',
+    title: 'Koti',
+    backgroundColor: '#242424',
     icon: path.join(__dirname, '../build/icon.png'),
     webPreferences: {
       nodeIntegration: false,
