@@ -1,8 +1,10 @@
 const { app, BrowserWindow, shell, nativeTheme } = require('electron');
 const path = require('path');
 
-// Fix Linux Wayland + Vulkan compatibility warning
-app.commandLine.appendSwitch('disable-features', 'Vulkan');
+// Support native Wayland and X11 automatically
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
+}
 
 let mainWindow = null;
 
