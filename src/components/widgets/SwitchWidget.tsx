@@ -1,0 +1,98 @@
+import React from 'react';
+import { Zap, Power } from 'lucide-react';
+import { HAEntityState } from '../../types/homeAssistant';
+import { WidgetConfig } from '../../types/dashboard';
+import { OneUICard } from '../oneui/OneUICard';
+
+interface SwitchWidgetProps {
+  config: WidgetConfig;
+  entity?: HAEntityState;
+  isEditMode: boolean;
+  onToggle: () => void;
+  onResize?: () => void;
+  onMovePrev?: () => void;
+  onMoveNext?: () => void;
+  onToggleFavorite?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}
+
+export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
+  config,
+  entity,
+  isEditMode,
+  onToggle,
+  onResize,
+  onMovePrev,
+  onMoveNext,
+  onToggleFavorite,
+  onEdit,
+  onDelete,
+}) => {
+  const isOn = entity?.state === 'on';
+  const name = config.customName || entity?.attributes?.friendly_name || 'Tomada';
+  const accentColor = config.customColor || '#10B981';
+
+  return (
+    <OneUICard
+      size={config.size}
+      isActive={isOn}
+      activeGlowColor={accentColor}
+      isEditMode={isEditMode}
+      isFavorite={config.isFavorite}
+      onToggleFavorite={onToggleFavorite}
+      onResize={onResize}
+      onMovePrev={onMovePrev}
+      onMoveNext={onMoveNext}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      onClick={onToggle}
+    >
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+              isOn ? 'shadow-lg' : 'bg-white/5 text-slate-400'
+            }`}
+            style={
+              isOn
+                ? {
+                    backgroundColor: `${accentColor}33`,
+                    color: accentColor,
+                    boxShadow: `0 0 20px ${accentColor}55`,
+                  }
+                : undefined
+            }
+          >
+            <Power size={22} />
+          </div>
+
+          <span
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+              isOn ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-500'
+            }`}
+          >
+            {isOn ? 'Ligado' : 'Desligado'}
+          </span>
+        </div>
+
+        <div className="mt-2">
+          <h3 className="font-medium text-base text-white truncate">{name}</h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {isOn ? 'Energia ativa' : 'Em espera'}
+          </p>
+        </div>
+      </div>
+
+      {config.size !== '1x1' && (
+        <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span className="flex items-center gap-1">
+            <Zap size={13} className={isOn ? 'text-amber-400' : 'text-slate-500'} />
+            Consumo
+          </span>
+          <span className="text-white font-medium">{isOn ? '45W' : '0W'}</span>
+        </div>
+      )}
+    </OneUICard>
+  );
+};
