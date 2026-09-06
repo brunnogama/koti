@@ -38,9 +38,9 @@ export const OneUICard: React.FC<OneUICardProps> = ({
   // Map size to responsive grid col spans
   const colSpanClass =
     size === '2x1'
-      ? 'col-span-1 sm:col-span-2'
+      ? 'col-span-2'
       : size === '2x2'
-      ? 'col-span-1 sm:col-span-2 row-span-2'
+      ? 'col-span-2 row-span-2'
       : 'col-span-1';
 
   return (

@@ -126,30 +126,30 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
       {/* Extended details for 2x1 and 2x2 cards */}
       {config.size !== '1x1' && (
         <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-3 gap-2 text-center text-xs text-slate-400">
-          <div className="flex flex-col items-center">
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
-              <Thermometer size={12} className="text-amber-400" />
-              Sensação
+          <div className="flex flex-col items-center min-w-0">
+            <span className="flex items-center gap-1 text-[11px] text-slate-400 truncate">
+              <Thermometer size={12} className="text-amber-400 shrink-0" />
+              <span>Sensação</span>
             </span>
-            <span className="text-white font-medium mt-0.5">
+            <span className="text-white font-medium mt-0.5 truncate">
               {weather.apparentTemperature ?? weather.temperature}°C
             </span>
           </div>
 
-          <div className="flex flex-col items-center border-x border-white/10">
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
-              <Droplets size={12} className="text-cyan-400" />
-              Umidade
+          <div className="flex flex-col items-center border-x border-white/10 min-w-0">
+            <span className="flex items-center gap-1 text-[11px] text-slate-400 truncate">
+              <Droplets size={12} className="text-cyan-400 shrink-0" />
+              <span>Umidade</span>
             </span>
-            <span className="text-white font-medium mt-0.5">{weather.humidity}%</span>
+            <span className="text-white font-medium mt-0.5 truncate">{weather.humidity}%</span>
           </div>
 
-          <div className="flex flex-col items-center">
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
-              <Wind size={12} className="text-blue-400" />
-              Vento
+          <div className="flex flex-col items-center min-w-0">
+            <span className="flex items-center gap-1 text-[11px] text-slate-400 truncate">
+              <Wind size={12} className="text-blue-400 shrink-0" />
+              <span>Vento</span>
             </span>
-            <span className="text-white font-medium mt-0.5">{weather.windSpeed} km/h</span>
+            <span className="text-white font-medium mt-0.5 truncate">{weather.windSpeed} km/h</span>
           </div>
         </div>
       )}

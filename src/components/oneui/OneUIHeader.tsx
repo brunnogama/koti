@@ -62,9 +62,9 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   };
 
   return (
-    <header className="relative w-full pt-8 pb-4 px-6 md:px-10 transition-all duration-300">
+    <header className="relative w-full pt-[calc(env(safe-area-inset-top,0px)+3.75rem)] pb-4 px-6 md:px-10 transition-all duration-300">
       {/* Top action row */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-8 md:mb-10">
         {/* Left: Connection status + Weather Pill */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">
@@ -136,16 +136,16 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
       </div>
 
       {/* Large Reachability Samsung One UI Area */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-2">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 pt-2 pb-1">
         <div>
-          <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold capitalize">
+          <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold capitalize mb-1">
             {dateStr}
           </div>
           {/* Dynamic greeting with user's name */}
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mt-1">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white">
             {getGreeting()}
           </h1>
-          <p className="text-sm md:text-base text-slate-400 mt-1 font-normal">
+          <p className="text-sm md:text-base text-slate-400 mt-1.5 font-normal">
             {subtitle || `${activeDevicesCount} aparelhos ativos no momento`}
           </p>
         </div>
