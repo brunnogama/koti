@@ -39,15 +39,15 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build Debug APK
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
-          VERSION_NAME: "1.0.${{ github.run_number }}"
         run: |
+          VERSION=$(node -p "require('./package.json').version")
+          BUILD_NUM=$(echo $VERSION | awk -F. '{print $3}')
           cd android
-          ./gradlew assembleDebug --no-daemon
+          BUILD_NUMBER=$BUILD_NUM VERSION_NAME=$VERSION ./gradlew assembleDebug --no-daemon
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: koti-universal-debug-apk-v1.0.${{ github.run_number }}
+          name: koti-universal-debug-apk-v${{ env.APP_VERSION }}
           path: android/app/build/outputs/apk/debug/app-debug.apk

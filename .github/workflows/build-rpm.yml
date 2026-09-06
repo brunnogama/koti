@@ -32,10 +32,13 @@ jobs:
         run: chmod +x build-rpm.sh
 
       - name: Build Fedora RPM
-        run: ./build-rpm.sh
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          ./build-rpm.sh "$VERSION"
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload RPM Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: koti-fedora-rpm-v1.0.4-x86_64
+          name: koti-fedora-rpm-v${{ env.APP_VERSION }}-x86_64
           path: rpmbuild/RPMS/x86_64/*.rpm

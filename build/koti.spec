@@ -3,7 +3,7 @@
 %define __strip /bin/true
 
 Name:           koti
-Version:        1.0.4
+Version:        %{?pkg_version}%{!?pkg_version:1.0.8}
 Release:        1%{?dist}
 Summary:        Koti Smart Home Dashboard - One UI
 License:        Proprietary

@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+VERSION="${1:-$(node -p "require('./package.json').version")}"
+echo "==> Versão de empacotamento: $VERSION <=="
+
 echo "==> 1. Gerando build dos assets web (Vite) <=="
 npm run build
 
@@ -14,6 +17,7 @@ rpmbuild -bb \
   --define "_topdir $(pwd)/rpmbuild" \
   --define "_sourcedir $(pwd)" \
   --define "_tmppath $(pwd)/rpmbuild/tmp" \
+  --define "pkg_version $VERSION" \
   build/koti.spec
 
 echo ""
