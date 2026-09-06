@@ -45,7 +45,7 @@ export const ScenesView: React.FC<ScenesViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto w-full animate-in fade-in duration-300">
+    <div className="space-y-4 max-w-[1920px] mx-auto w-full animate-in fade-in duration-300">
       {/* Top Navigation Bar: Quick Return to Favorites/Dashboard */}
       <div className="flex items-center justify-between pb-1">
         <button
@@ -88,7 +88,7 @@ export const ScenesView: React.FC<ScenesViewProps> = ({
       )}
 
       {/* Scenes Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
         {realScenes.map((scene) => {
           const isTriggered = activeTriggerId === scene.entity_id;
           const friendlyName = scene.attributes.friendly_name || scene.entity_id;

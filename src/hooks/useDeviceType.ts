@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export type DeviceCategory = 'mobile' | 'tablet' | 'tv';
+export type DeviceCategory = 'mobile' | 'tablet' | 'desktop' | 'tv';
 
 export function useDeviceType() {
   const [device, setDevice] = useState<DeviceCategory>('mobile');
@@ -24,10 +24,10 @@ export function useDeviceType() {
       const width = window.innerWidth;
       if (width < 768) {
         setDevice('mobile');
-      } else if (width < 1280) {
+      } else if (width < 1100) {
         setDevice('tablet');
       } else {
-        setDevice('tablet'); // Default large screens to comfortable tablet/desktop mode
+        setDevice('desktop');
       }
     };
 
@@ -44,6 +44,7 @@ export function useDeviceType() {
     device: isTVModeForced ? 'tv' : device,
     isMobile: !isTVModeForced && device === 'mobile',
     isTablet: !isTVModeForced && device === 'tablet',
+    isDesktop: !isTVModeForced && device === 'desktop',
     isTV: isTVModeForced || device === 'tv',
     isTVModeForced,
     toggleForceTVMode,

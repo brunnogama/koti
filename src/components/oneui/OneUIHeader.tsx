@@ -68,8 +68,8 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   return (
     <>
       {/* Top Bar with Welcome Greeting on the Left and Actions on the Right */}
-      <div className="sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 px-6 md:px-10 backdrop-blur-2xl bg-[#0d0f12]/85 border-b border-white/5 transition-all duration-300">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+      <div className="sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 px-6 md:px-10 lg:px-12 backdrop-blur-2xl bg-[#0d0f12]/85 border-b border-white/5 transition-all duration-300">
+        <div className="flex items-center justify-between w-full max-w-[1920px] mx-auto">
           {/* Left: Optional Back Button + Welcome Greeting + Weather underneath */}
           <div className="flex items-center gap-3 min-w-0 pr-4">
             {onBack && (

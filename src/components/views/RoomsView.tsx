@@ -138,7 +138,7 @@ export const RoomsView: React.FC<RoomsViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto w-full animate-in fade-in duration-300">
+    <div className="space-y-4 max-w-[1920px] mx-auto w-full animate-in fade-in duration-300">
       {/* Top Navigation Bar: Quick Return to Favorites/Dashboard */}
       <div className="flex items-center justify-between pb-1">
         <button
@@ -249,7 +249,7 @@ export const RoomsView: React.FC<RoomsViewProps> = ({
       )}
 
       {/* Rooms Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
         {rooms.map((room) => {
           const isFavorites = room.id === 'favorites';
           const roomWidgets = isFavorites

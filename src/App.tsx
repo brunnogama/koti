@@ -34,7 +34,7 @@ export function App() {
     setTemperature,
   } = useHomeAssistant();
 
-  const { isMobile, isTablet, isTV, toggleForceTVMode } = useDeviceType();
+  const { isMobile, isTablet, isDesktop, isTV, toggleForceTVMode } = useDeviceType();
 
   const {
     layout,
@@ -258,7 +258,7 @@ export function App() {
       )}
 
       {/* Main Responsive Grid Area */}
-      <main className="flex-1 px-6 md:px-10 pb-28 md:pb-12 max-w-7xl w-full mx-auto">
+      <main className="flex-1 px-6 md:px-10 lg:px-12 pb-28 md:pb-12 w-full max-w-[1920px] mx-auto">
         {currentNavTab === 'rooms' ? (
           <RoomsView
             rooms={layout.rooms}
@@ -300,11 +300,9 @@ export function App() {
         ) : (
           <div
             className={`grid gap-4 sm:gap-5 transition-all duration-300 ${
-              isMobile
-                ? 'grid-cols-2'
-                : isTablet
-                ? 'grid-cols-3 lg:grid-cols-4'
-                : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+              isTV
+                ? 'grid-cols-3 xl:grid-cols-4'
+                : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
             }`}
           >
           {currentWidgets.map((w) => {

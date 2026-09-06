@@ -24,8 +24,9 @@ export const OneUIPill: React.FC<OneUIPillsProps> = ({
   };
 
   return (
-    <div className="w-full px-6 md:px-10 mb-6">
-      <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-2">
+    <div className="w-full px-6 md:px-10 lg:px-12 mb-6">
+      <div className="w-full max-w-[1920px] mx-auto">
+        <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-2">
         {rooms.map((room) => {
           const isActive = room.id === activeRoomId;
           const isFavorites = room.id === 'favorites' || room.name.toLowerCase() === 'favoritos';
@@ -97,5 +98,6 @@ export const OneUIPill: React.FC<OneUIPillsProps> = ({
         </button>
       </div>
     </div>
-  );
+  </div>
+);
 };
