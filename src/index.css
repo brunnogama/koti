@@ -57,18 +57,23 @@
   box-shadow: 0 0 20px rgba(44, 117, 255, 0.2);
 }
 
-/* TV D-Pad Focus Ring */
+*:focus,
+*:focus-visible {
+  outline: none !important;
+}
+
+/* TV D-Pad Focus without colored outline */
 .tv-focusable {
-  outline: none;
+  outline: none !important;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.tv-focusable:focus,
 .tv-focusable:focus-visible,
 .tv-focused {
-  outline: 3px solid #2c75ff;
-  outline-offset: 4px;
-  transform: scale(1.04);
-  box-shadow: 0 0 35px rgba(44, 117, 255, 0.6) !important;
+  outline: none !important;
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.3) !important;
   z-index: 20;
 }
 
