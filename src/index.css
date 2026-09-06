@@ -53,8 +53,8 @@
 .oneui-glass-active {
   background: rgba(44, 117, 255, 0.25);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(44, 117, 255, 0.5);
-  box-shadow: 0 0 20px rgba(44, 117, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 20px rgba(44, 117, 255, 0.2);
 }
 
 /* TV D-Pad Focus Ring */

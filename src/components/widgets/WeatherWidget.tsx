@@ -75,7 +75,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   return (
     <OneUICard
       size={config.size}
-      isActive={true}
+      isActive={false}
       activeGlowColor={accentColor}
       isEditMode={isEditMode}
       isFavorite={config.isFavorite}

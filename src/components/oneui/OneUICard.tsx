@@ -48,14 +48,13 @@ export const OneUICard: React.FC<OneUICardProps> = ({
       onClick={!isEditMode ? onClick : undefined}
       className={`relative group rounded-[28px] p-5 transition-all duration-300 select-none overflow-hidden tv-focusable ${colSpanClass} ${
         isActive
-          ? 'bg-slate-900/60 border-white/20'
+          ? 'bg-slate-900/70 border-white/15'
           : 'bg-slate-950/40 border-white/10'
       } backdrop-blur-2xl border shadow-xl hover:border-white/25 hover:shadow-2xl active:scale-[0.98] ${className}`}
       style={
         isActive
           ? {
-              boxShadow: `0 8px 30px ${activeGlowColor}33`,
-              borderColor: `${activeGlowColor}66`,
+              boxShadow: `0 8px 24px ${activeGlowColor}1f`,
             }
           : undefined
       }
