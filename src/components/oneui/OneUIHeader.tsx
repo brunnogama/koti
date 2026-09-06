@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Edit3, Check, Tv, Wifi, WifiOff, Sun, CloudSun, CloudRain, Cloud } from 'lucide-react';
+import { Settings, Edit3, Check, Wifi, WifiOff, Sun, CloudSun, CloudRain, Cloud } from 'lucide-react';
 import { WeatherData } from '../../types/dashboard';
 
 interface OneUIHeaderProps {
@@ -12,22 +12,22 @@ interface OneUIHeaderProps {
   isEditMode: boolean;
   onToggleEditMode: () => void;
   onOpenSettings: () => void;
-  isTV: boolean;
-  onToggleTVMode: () => void;
+  isTV?: boolean;
+  onToggleTVMode?: () => void;
 }
 
 export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   userName = 'Bruno',
   title,
-  subtitle,
+  subtitle: _subtitle,
   weather,
-  activeDevicesCount,
+  activeDevicesCount: _activeDevicesCount,
   connectionStatus,
   isEditMode,
   onToggleEditMode,
   onOpenSettings,
-  isTV,
-  onToggleTVMode,
+  isTV: _isTV,
+  onToggleTVMode: _onToggleTVMode,
 }) => {
   const [time, setTime] = useState<string>('');
   const [dateStr, setDateStr] = useState<string>('');
@@ -101,19 +101,6 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
-            {/* TV Mode Toggle button */}
-            <button
-              onClick={onToggleTVMode}
-              title={isTV ? "Modo TV Ativo (Navegação D-Pad)" : "Ativar Modo TV"}
-              className={`p-2.5 rounded-full transition-all duration-200 ${
-                isTV
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                  : 'oneui-glass text-slate-300 hover:text-white'
-              }`}
-            >
-              <Tv size={18} />
-            </button>
-
             {/* Edit Dashboard Button (Icon Only) */}
             <button
               onClick={onToggleEditMode}
@@ -139,25 +126,19 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
         </div>
       </div>
 
-      {/* Large Reachability Samsung One UI Area */}
-      <header className="relative w-full pt-4 pb-2 px-6 md:px-10 max-w-7xl mx-auto transition-all duration-300">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 pt-2 pb-1">
+      {/* Clean One UI Greeting Area */}
+      <header className="relative w-full pt-2 pb-1 px-6 md:px-10 max-w-7xl mx-auto transition-all duration-300">
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold capitalize mb-1">
-              {dateStr}
-            </div>
-            {/* Dynamic greeting with user's name */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white">
+            {/* Dynamic greeting with user's name only */}
+            <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
               {title || getGreeting()}
             </h1>
-            <p className="text-sm md:text-base text-slate-400 mt-1.5 font-normal">
-              {subtitle || `${activeDevicesCount} aparelhos ativos no momento`}
-            </p>
           </div>
 
           {/* Digital Clock Display */}
-          <div className="hidden md:block text-right">
-            <div className="text-3xl font-extralight text-white/90 tracking-wide">
+          <div className="hidden sm:block text-right">
+            <div className="text-2xl sm:text-3xl font-extralight text-white/90 tracking-wide">
               {time}
             </div>
           </div>

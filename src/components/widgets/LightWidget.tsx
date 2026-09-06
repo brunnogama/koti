@@ -203,9 +203,9 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
         triggerHaptic('medium');
       }}
     >
-      <div>
-        {/* Header row: Icon (quick toggle) + Power Indicator */}
-        <div className="flex items-center justify-between mb-2">
+      <div className="w-full">
+        {/* Header row: Icon (quick toggle) + Name side by side */}
+        <div className="flex items-center gap-3 w-full">
           <button
             type="button"
             onClick={(e) => {
@@ -214,7 +214,7 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
               triggerHaptic('medium');
             }}
             title={isOn ? 'Desligar' : 'Ligar'}
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+            className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0 ${
               isOn ? 'shadow-lg hover:scale-105' : 'bg-white/5 text-slate-400'
             }`}
             style={
@@ -222,7 +222,7 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
                 ? {
                     backgroundColor: `${accentColor}33`,
                     color: accentColor,
-                    boxShadow: `0 0 20px ${accentColor}55`,
+                    boxShadow: `0 0 16px ${accentColor}55`,
                   }
                 : undefined
             }
@@ -230,50 +230,42 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
             <DynamicIcon
               name={config.customIcon}
               defaultIcon={Lightbulb}
-              size={24}
-              className={isOn ? 'filter drop-shadow-[0_0_8px_currentColor]' : ''}
+              size={20}
+              className={isOn ? 'filter drop-shadow-[0_0_6px_currentColor]' : ''}
             />
           </button>
 
-          <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-              isOn ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-500'
-            }`}
-          >
-            {isOn ? `${displayBrightness}%` : 'Desligada'}
-          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">
+              {name}
+            </h3>
+          </div>
         </div>
 
-        {/* Title and Dimmer Control (Always visible in place of 'Toque para ligar') */}
-        <div className="mt-2">
-          <h3 className="font-medium text-base text-white truncate">{name}</h3>
-
-          {/* Integrated One UI Dimmer Track */}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-            className="mt-2 touch-none cursor-ew-resize py-0.5"
-            title="Deslize horizontalmente para ajustar o brilho"
-          >
-            <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium">
-              <span className="text-slate-400">{isOn ? 'Brilho' : 'Desligada'}</span>
-              <span className={isOn ? 'text-white font-semibold' : 'text-slate-500'}>
-                {displayBrightness}%
-              </span>
-            </div>
-            <div className="relative w-full h-4 rounded-full bg-white/10 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-[width] duration-75"
-                style={{
-                  width: `${displayBrightness}%`,
-                  backgroundColor: isOn ? accentColor : 'rgba(255, 255, 255, 0.2)',
-                  boxShadow: isOn ? `0 0 12px ${accentColor}99` : 'none',
-                }}
-              />
-            </div>
+        {/* Integrated One UI Full-Width Dimmer Track (Text 'Brilho' & '%' removed, bar expanded) */}
+        <div
+          draggable={false}
+          onDragStart={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          className="mt-3 touch-none cursor-ew-resize py-1"
+          title="Deslize horizontalmente para ajustar o brilho"
+        >
+          <div className="relative w-full h-5 rounded-full bg-white/10 overflow-hidden shadow-inner">
+            <div
+              className="h-full rounded-full transition-[width] duration-75"
+              style={{
+                width: `${displayBrightness}%`,
+                backgroundColor: isOn ? accentColor : 'rgba(255, 255, 255, 0.2)',
+                boxShadow: isOn ? `0 0 14px ${accentColor}99` : 'none',
+              }}
+            />
           </div>
         </div>
       </div>

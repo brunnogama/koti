@@ -28,6 +28,37 @@ export const OneUIPill: React.FC<OneUIPillsProps> = ({
       <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-2">
         {rooms.map((room) => {
           const isActive = room.id === activeRoomId;
+          const isFavorites = room.id === 'favorites' || room.name.toLowerCase() === 'favoritos';
+
+          if (isFavorites) {
+            return (
+              <button
+                key={room.id}
+                onClick={() => onSelectRoom(room.id)}
+                title="Favoritos"
+                className={`flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 shrink-0 tv-focusable ${
+                  isActive
+                    ? 'text-white shadow-lg'
+                    : 'oneui-glass-pill text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: accentColor,
+                        boxShadow: `0 4px 20px ${accentColor}55`,
+                      }
+                    : undefined
+                }
+              >
+                <Icons.Star
+                  size={18}
+                  fill={isActive ? 'currentColor' : 'none'}
+                  className={isActive ? 'text-amber-300' : 'text-slate-300'}
+                />
+              </button>
+            );
+          }
+
           return (
             <button
               key={room.id}

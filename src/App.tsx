@@ -98,6 +98,8 @@ export function App() {
   const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
   const [dragOverWidgetId, setDragOverWidgetId] = useState<string | null>(null);
   const touchStartRef = useRef<{ id: string; x: number; y: number } | null>(null);
+  const longPressTimerRef = useRef<any>(null);
+  const isTouchDraggingRef = useRef<boolean>(false);
 
   // Filter widgets for current room
   const currentWidgets = useMemo(() => {
@@ -233,7 +235,6 @@ export function App() {
         onToggleEditMode={() => setIsEditMode(!isEditMode)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         isTV={isTV}
-        onToggleTVMode={toggleForceTVMode}
       />
 
       {/* Room Tabs Pills (only in Home tab) */}
@@ -390,14 +391,17 @@ export function App() {
               <div
                 key={w.id}
                 data-widget-id={w.id}
-                draggable={isEditMode}
+                draggable={true}
                 onDragStart={(e) => {
-                  if (!isEditMode) return;
+                  const target = e.target as HTMLElement;
+                  if (target.closest('button') || target.closest('input')) {
+                    e.preventDefault();
+                    return;
+                  }
                   e.dataTransfer.setData('text/plain', w.id);
                   setDraggedWidgetId(w.id);
                 }}
                 onDragOver={(e) => {
-                  if (!isEditMode) return;
                   e.preventDefault();
                   if (dragOverWidgetId !== w.id) {
                     setDragOverWidgetId(w.id);
@@ -409,7 +413,6 @@ export function App() {
                   }
                 }}
                 onDrop={(e) => {
-                  if (!isEditMode) return;
                   e.preventDefault();
                   const sourceId = e.dataTransfer.getData('text/plain') || draggedWidgetId;
                   if (sourceId && sourceId !== w.id) {
@@ -423,32 +426,58 @@ export function App() {
                   setDragOverWidgetId(null);
                 }}
                 onTouchStart={(e) => {
-                  if (!isEditMode) return;
                   const target = e.target as HTMLElement;
                   if (target.closest('button') || target.closest('input')) return;
+                  const touch = e.touches[0];
                   touchStartRef.current = {
                     id: w.id,
-                    x: e.touches[0].clientX,
-                    y: e.touches[0].clientY,
+                    x: touch.clientX,
+                    y: touch.clientY,
                   };
+                  isTouchDraggingRef.current = false;
+                  if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                  longPressTimerRef.current = setTimeout(() => {
+                    isTouchDraggingRef.current = true;
+                    setDraggedWidgetId(w.id);
+                    if (navigator.vibrate) navigator.vibrate(40);
+                  }, 280);
                 }}
                 onTouchMove={(e) => {
-                  if (!isEditMode || !touchStartRef.current) return;
+                  if (!touchStartRef.current) return;
                   const touch = e.touches[0];
+                  const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+                  const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+
+                  if (!isTouchDraggingRef.current) {
+                    if (dx > 8 || dy > 8) {
+                      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                    }
+                    return;
+                  }
+
+                  if (e.cancelable) e.preventDefault();
                   const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
                   const cardContainer = targetEl?.closest('[data-widget-id]');
                   const targetId = cardContainer?.getAttribute('data-widget-id');
                   if (targetId && targetId !== touchStartRef.current.id) {
                     setDragOverWidgetId(targetId);
-                    setDraggedWidgetId(touchStartRef.current.id);
                   }
                 }}
                 onTouchEnd={() => {
-                  if (!isEditMode || !touchStartRef.current) return;
-                  if (dragOverWidgetId && touchStartRef.current.id && dragOverWidgetId !== touchStartRef.current.id) {
+                  if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                  if (isTouchDraggingRef.current && dragOverWidgetId && touchStartRef.current?.id && dragOverWidgetId !== touchStartRef.current.id) {
                     reorderWidgets(touchStartRef.current.id, dragOverWidgetId);
+                    if (navigator.vibrate) navigator.vibrate(30);
                   }
                   touchStartRef.current = null;
+                  isTouchDraggingRef.current = false;
+                  setDraggedWidgetId(null);
+                  setDragOverWidgetId(null);
+                }}
+                onTouchCancel={() => {
+                  if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                  touchStartRef.current = null;
+                  isTouchDraggingRef.current = false;
                   setDraggedWidgetId(null);
                   setDragOverWidgetId(null);
                 }}

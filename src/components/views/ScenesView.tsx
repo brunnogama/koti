@@ -118,10 +118,7 @@ export const ScenesView: React.FC<ScenesViewProps> = ({
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="text-base font-light text-white truncate">{friendlyName}</h3>
-                  <span className="block text-xs text-slate-400 font-mono mt-0.5 truncate">
-                    {scene.entity_id}
-                  </span>
+                  <h3 className="text-base font-medium text-white truncate">{friendlyName}</h3>
                 </div>
               </div>
 

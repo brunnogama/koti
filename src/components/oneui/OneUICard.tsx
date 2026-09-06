@@ -50,19 +50,16 @@ export const OneUICard: React.FC<OneUICardProps> = ({
   return (
     <div
       onClick={!isEditMode ? onClick : onEdit}
-      draggable={isEditMode}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
       className={`relative group transition-all duration-300 select-none overflow-hidden outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 tv-focusable ${colSpanClass} ${
-        isPill ? 'rounded-[22px] p-3 min-h-[64px]' : 'rounded-[28px] p-5 min-h-[140px]'
+        isPill ? 'rounded-[22px] p-3 min-h-[60px]' : 'rounded-[26px] p-4 min-h-[100px]'
       } ${
         isActive
           ? 'bg-slate-900/75 border-white/15'
           : 'bg-slate-950/45 border-white/10'
-      } ${
-        isEditMode ? 'cursor-grab active:cursor-grabbing hover:border-white/30' : ''
-      } backdrop-blur-2xl border shadow-xl hover:border-white/25 hover:shadow-2xl active:scale-[0.98] ${className}`}
+      } cursor-grab active:cursor-grabbing backdrop-blur-2xl border shadow-xl hover:border-white/25 hover:shadow-2xl active:scale-[0.98] ${className}`}
       tabIndex={0}
     >
       {/* Edit Mode Overlay Toolbar */}

@@ -101,16 +101,25 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
       onEdit={onEdit}
       onDelete={onDelete}
     >
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300"
-            style={{
-              backgroundColor: !isOff ? `${accentColor}33` : 'rgba(255,255,255,0.05)',
-              color: !isOff ? accentColor : '#94a3b8',
-            }}
-          >
-            <DynamicIcon name={config.customIcon} defaultIcon={Wind} size={22} />
+      <div className="w-full">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0"
+              style={{
+                backgroundColor: !isOff ? `${accentColor}33` : 'rgba(255,255,255,0.05)',
+                color: !isOff ? accentColor : '#94a3b8',
+              }}
+            >
+              <DynamicIcon name={config.customIcon} defaultIcon={Wind} size={20} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
+              <p className="text-xs text-slate-400 mt-0.5 truncate">
+                {!isOff ? `Ambiente: ${currentTemp}°C` : 'Desligado'}
+              </p>
+            </div>
           </div>
 
           <button
@@ -118,19 +127,12 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
               e.stopPropagation();
               onTogglePower();
             }}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-2 rounded-full transition-colors shrink-0 ${
               !isOff ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-500 hover:text-white'
             }`}
           >
             <Power size={16} />
           </button>
-        </div>
-
-        <div className="mt-1">
-          <h3 className="font-medium text-base text-white truncate">{name}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {!isOff ? `Ambiente: ${currentTemp}°C` : 'Desligado'}
-          </p>
         </div>
       </div>
 

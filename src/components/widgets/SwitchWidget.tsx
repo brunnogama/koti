@@ -112,39 +112,41 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
       onDelete={onDelete}
       onClick={handleToggle}
     >
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-              isOn ? 'shadow-lg' : 'bg-white/5 text-slate-400'
-            }`}
-            style={
-              isOn
-                ? {
-                    backgroundColor: `${accentColor}33`,
-                    color: accentColor,
-                    boxShadow: `0 0 20px ${accentColor}55`,
-                  }
-                : undefined
-            }
-          >
-            <DynamicIcon name={config.customIcon} defaultIcon={Power} size={22} />
+      <div className="w-full">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0 ${
+                isOn ? 'shadow-lg' : 'bg-white/5 text-slate-400'
+              }`}
+              style={
+                isOn
+                  ? {
+                      backgroundColor: `${accentColor}33`,
+                      color: accentColor,
+                      boxShadow: `0 0 16px ${accentColor}55`,
+                    }
+                  : undefined
+              }
+            >
+              <DynamicIcon name={config.customIcon} defaultIcon={Power} size={20} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
+              <p className="text-xs text-slate-400 truncate mt-0.5">
+                {isOn ? 'Ligado' : 'Desligado'}
+              </p>
+            </div>
           </div>
 
           <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${
               isOn ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-500'
             }`}
           >
             {isOn ? 'Ligado' : 'Desligado'}
           </span>
-        </div>
-
-        <div className="mt-2">
-          <h3 className="font-medium text-base text-white truncate">{name}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {isOn ? 'Energia ativa' : 'Em espera'}
-          </p>
         </div>
       </div>
 

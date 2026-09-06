@@ -141,69 +141,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <X size={20} />
           </button>
         </div>
-
-        {/* Tab Navigation */}
-        <div className="max-w-xl mx-auto flex items-center gap-1.5 mt-3 p-1 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-              activeTab === 'profile'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <User size={14} />
-            <span>Perfil</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('ha')}
-            className={`flex-1 min-w-[110px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-              activeTab === 'ha'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Server size={14} />
-            <span>Home Assistant</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('theme')}
-            className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-              activeTab === 'theme'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Palette size={14} />
-            <span>Tema One UI</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('widgets')}
-            className={`flex-1 min-w-[120px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-              activeTab === 'widgets'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <LayoutGrid size={14} />
-            <span>Widgets Android</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('backup')}
-            className={`flex-1 min-w-[90px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-              activeTab === 'backup'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Download size={14} />
-            <span>Backup</span>
-          </button>
-        </div>
       </div>
 
       {/* Full-Screen Scrollable Body */}
@@ -616,11 +553,73 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
       </div>
 
-      {/* Version info footer */}
-      <div className="sticky bottom-0 z-20 px-6 py-3 border-t border-white/10 bg-[#0d0f12]/95 backdrop-blur-xl">
-        <div className="max-w-xl mx-auto flex items-center justify-between text-[11px] text-slate-500">
-          <span>Koti Smart Home • One UI 9</span>
-          <span className="font-mono">v1.0.4</span>
+      {/* One UI Bottom Navigation Bar */}
+      <div className="sticky bottom-0 z-30 px-2 py-1.5 pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] border-t border-white/10 bg-[#0d0f12]/95 backdrop-blur-2xl">
+        <div className="max-w-xl mx-auto grid grid-cols-5 gap-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab('profile')}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
+              activeTab === 'profile'
+                ? 'text-blue-400 bg-white/10 font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <User size={19} />
+            <span className="text-[10px] sm:text-xs mt-1 truncate">Perfil</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('ha')}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
+              activeTab === 'ha'
+                ? 'text-blue-400 bg-white/10 font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Server size={19} />
+            <span className="text-[10px] sm:text-xs mt-1 truncate">Servidor</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('theme')}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
+              activeTab === 'theme'
+                ? 'text-blue-400 bg-white/10 font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Palette size={19} />
+            <span className="text-[10px] sm:text-xs mt-1 truncate">Tema</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('widgets')}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
+              activeTab === 'widgets'
+                ? 'text-blue-400 bg-white/10 font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutGrid size={19} />
+            <span className="text-[10px] sm:text-xs mt-1 truncate">Widgets</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('backup')}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
+              activeTab === 'backup'
+                ? 'text-blue-400 bg-white/10 font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Download size={19} />
+            <span className="text-[10px] sm:text-xs mt-1 truncate">Backup</span>
+          </button>
         </div>
       </div>
     </div>

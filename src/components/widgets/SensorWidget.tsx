@@ -115,30 +115,28 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
       onEdit={onEdit}
       onDelete={onDelete}
     >
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300"
-            style={{
-              backgroundColor: `${accentColor}25`,
-              color: accentColor,
-            }}
-          >
-            <DynamicIcon name={config.customIcon} defaultIcon={Icon} size={22} />
+      <div className="w-full">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0"
+              style={{
+                backgroundColor: `${accentColor}25`,
+                color: accentColor,
+              }}
+            >
+              <DynamicIcon name={config.customIcon} defaultIcon={Icon} size={20} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
+              <p className="text-xs text-slate-400 truncate mt-0.5">{statusText}</p>
+            </div>
           </div>
 
-          <span
-            className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/5 text-slate-300"
-          >
-            {statusText}
-          </span>
-        </div>
-
-        <div className="mt-2">
-          <div className="text-2xl font-light text-white tracking-tight">
+          <span className="text-base font-medium text-white tracking-tight shrink-0 px-1">
             {displayValue}
-          </div>
-          <p className="text-xs text-slate-400 mt-0.5 truncate">{name}</p>
+          </span>
         </div>
       </div>
 
