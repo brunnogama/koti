@@ -116,27 +116,27 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
       onDelete={onDelete}
     >
       <div className="w-full">
+        {/* Top row: Icon on left, sensor value on right */}
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0"
-              style={{
-                backgroundColor: `${accentColor}25`,
-                color: accentColor,
-              }}
-            >
-              <DynamicIcon name={config.customIcon} defaultIcon={Icon} size={20} />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
-              <p className="text-xs text-slate-400 truncate mt-0.5">{statusText}</p>
-            </div>
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0"
+            style={{
+              backgroundColor: `${accentColor}25`,
+              color: accentColor,
+            }}
+          >
+            <DynamicIcon name={config.customIcon} defaultIcon={Icon} size={20} />
           </div>
 
-          <span className="text-base font-medium text-white tracking-tight shrink-0 px-1">
+          <span className="text-base font-semibold text-white tracking-tight shrink-0 px-1">
             {displayValue}
           </span>
+        </div>
+
+        {/* Device Name and Status below the icon */}
+        <div className="mt-2.5 min-w-0">
+          <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
+          <p className="text-xs text-slate-400 truncate mt-0.5">{statusText}</p>
         </div>
       </div>
 

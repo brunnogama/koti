@@ -102,24 +102,16 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
       onDelete={onDelete}
     >
       <div className="w-full">
+        {/* Top row: Icon on left, power button on right */}
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0"
-              style={{
-                backgroundColor: !isOff ? `${accentColor}33` : 'rgba(255,255,255,0.05)',
-                color: !isOff ? accentColor : '#94a3b8',
-              }}
-            >
-              <DynamicIcon name={config.customIcon} defaultIcon={Wind} size={20} />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
-              <p className="text-xs text-slate-400 mt-0.5 truncate">
-                {!isOff ? `Ambiente: ${currentTemp}°C` : 'Desligado'}
-              </p>
-            </div>
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0"
+            style={{
+              backgroundColor: !isOff ? `${accentColor}33` : 'rgba(255,255,255,0.05)',
+              color: !isOff ? accentColor : '#94a3b8',
+            }}
+          >
+            <DynamicIcon name={config.customIcon} defaultIcon={Wind} size={20} />
           </div>
 
           <button
@@ -133,6 +125,14 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
           >
             <Power size={16} />
           </button>
+        </div>
+
+        {/* Device Name and Ambient Temp below the icon */}
+        <div className="mt-2.5 min-w-0">
+          <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
+          <p className="text-xs text-slate-400 mt-0.5 truncate">
+            {!isOff ? `Ambiente: ${currentTemp}°C` : 'Desligado'}
+          </p>
         </div>
       </div>
 

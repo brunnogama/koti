@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Play, Check, Star, Plus } from 'lucide-react';
+import { Sparkles, Play, Check, Star, Plus, ChevronLeft } from 'lucide-react';
 import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig } from '../../types/dashboard';
 import { MOCK_ENTITY_IDS } from '../../services/mockData';
@@ -12,6 +12,7 @@ interface ScenesViewProps {
   onTriggerScene: (entityId: string) => void;
   onAddSceneWidget: (sceneEntityId: string, friendlyName: string) => void;
   onRemoveWidget: (widgetId: string) => void;
+  onBack?: () => void;
 }
 
 export const ScenesView: React.FC<ScenesViewProps> = ({
@@ -22,6 +23,7 @@ export const ScenesView: React.FC<ScenesViewProps> = ({
   onTriggerScene,
   onAddSceneWidget,
   onRemoveWidget,
+  onBack,
 }) => {
   const [activeTriggerId, setActiveTriggerId] = useState<string | null>(null);
 
@@ -44,6 +46,18 @@ export const ScenesView: React.FC<ScenesViewProps> = ({
 
   return (
     <div className="space-y-4 max-w-4xl mx-auto w-full animate-in fade-in duration-300">
+      {/* Top Navigation Bar: Quick Return to Favorites/Dashboard */}
+      <div className="flex items-center justify-between pb-1">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full oneui-glass text-xs font-medium text-slate-300 hover:text-white transition-all duration-200 hover:border-white/20 active:scale-95 border border-white/10 shadow-sm"
+        >
+          <ChevronLeft size={16} />
+          <span>Voltar ao Dashboard</span>
+        </button>
+      </div>
+
       {/* Header Info Banner in Edit Mode */}
       {isEditMode && (
         <div className="p-4 rounded-2xl bg-purple-600/15 border border-purple-500/30 flex items-center justify-between">

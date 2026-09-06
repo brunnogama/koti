@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Edit3, Check, Wifi, WifiOff, Sun, CloudSun, CloudRain, Cloud } from 'lucide-react';
+import { Settings, Edit3, Check, Wifi, WifiOff, Sun, CloudSun, CloudRain, Cloud, ChevronLeft } from 'lucide-react';
 import { WeatherData } from '../../types/dashboard';
 
 interface OneUIHeaderProps {
@@ -14,6 +14,7 @@ interface OneUIHeaderProps {
   onOpenSettings: () => void;
   isTV?: boolean;
   onToggleTVMode?: () => void;
+  onBack?: () => void;
 }
 
 export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
@@ -28,6 +29,7 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   onOpenSettings,
   isTV: _isTV,
   onToggleTVMode: _onToggleTVMode,
+  onBack,
 }) => {
   const [time, setTime] = useState<string>('');
   const [dateStr, setDateStr] = useState<string>('');
@@ -68,18 +70,30 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
       {/* Top Bar with Welcome Greeting on the Left and Actions on the Right */}
       <div className="sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 px-6 md:px-10 backdrop-blur-2xl bg-[#0d0f12]/85 border-b border-white/5 transition-all duration-300">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          {/* Left: Welcome Greeting + Weather underneath */}
-          <div className="flex flex-col min-w-0 pr-4">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-light tracking-tight text-white leading-tight truncate">
-              {title || getGreeting()}
-            </h1>
-            {weather && (
-              <div className="flex items-center gap-1.5 mt-1 text-xs font-medium text-slate-300">
-                {getWeatherIcon(weather.conditionCode)}
-                <span>{weather.temperature}°C</span>
-                <span className="hidden sm:inline text-slate-400">• {weather.cityName}</span>
-              </div>
+          {/* Left: Optional Back Button + Welcome Greeting + Weather underneath */}
+          <div className="flex items-center gap-3 min-w-0 pr-4">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="p-2.5 -ml-1 rounded-full oneui-glass text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 border border-white/10"
+                title="Voltar"
+              >
+                <ChevronLeft size={20} />
+              </button>
             )}
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-light tracking-tight text-white leading-tight truncate">
+                {title || getGreeting()}
+              </h1>
+              {weather && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs font-medium text-slate-300">
+                  {getWeatherIcon(weather.conditionCode)}
+                  <span>{weather.temperature}°C</span>
+                  <span className="hidden sm:inline text-slate-400">• {weather.cityName}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right controls: [Edit] [Online Status Icon] [Settings] */}

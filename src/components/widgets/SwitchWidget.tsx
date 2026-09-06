@@ -113,31 +113,23 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
       onClick={handleToggle}
     >
       <div className="w-full">
+        {/* Top row: Icon on left, status badge on right */}
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div
-              className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0 ${
-                isOn ? 'shadow-lg' : 'bg-white/5 text-slate-400'
-              }`}
-              style={
-                isOn
-                  ? {
-                      backgroundColor: `${accentColor}33`,
-                      color: accentColor,
-                      boxShadow: `0 0 16px ${accentColor}55`,
-                    }
-                  : undefined
-              }
-            >
-              <DynamicIcon name={config.customIcon} defaultIcon={Power} size={20} />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
-              <p className="text-xs text-slate-400 truncate mt-0.5">
-                {isOn ? 'Ligado' : 'Desligado'}
-              </p>
-            </div>
+          <div
+            className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shrink-0 ${
+              isOn ? 'shadow-lg' : 'bg-white/5 text-slate-400'
+            }`}
+            style={
+              isOn
+                ? {
+                    backgroundColor: `${accentColor}33`,
+                    color: accentColor,
+                    boxShadow: `0 0 16px ${accentColor}55`,
+                  }
+                : undefined
+            }
+          >
+            <DynamicIcon name={config.customIcon} defaultIcon={Power} size={20} />
           </div>
 
           <span
@@ -147,6 +139,14 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
           >
             {isOn ? 'Ligado' : 'Desligado'}
           </span>
+        </div>
+
+        {/* Device Name and State below the icon */}
+        <div className="mt-2.5 min-w-0">
+          <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">{name}</h3>
+          <p className="text-xs text-slate-400 truncate mt-0.5">
+            {isOn ? 'Ligado' : 'Desligado'}
+          </p>
         </div>
       </div>
 

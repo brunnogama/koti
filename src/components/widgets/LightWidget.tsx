@@ -227,8 +227,8 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
         onClick={() => setIsDetailModalOpen(true)}
       >
         <div className="w-full">
-          {/* Header row: Icon (quick toggle) + Name + Color Palette Button */}
-          <div className="flex items-center gap-2.5 w-full">
+          {/* Top row: Icon (quick toggle) on left, Apple Home Palette Button on right */}
+          <div className="flex items-center justify-between w-full">
             <button
               type="button"
               onClick={(e) => {
@@ -258,12 +258,6 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
               />
             </button>
 
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">
-                {name}
-              </h3>
-            </div>
-
             {/* Apple Home Style Color Picker Trigger Button */}
             <button
               type="button"
@@ -276,6 +270,13 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
             >
               <Palette size={15} style={isOn ? { color: activeColor } : undefined} />
             </button>
+          </div>
+
+          {/* Device Name below the icon row */}
+          <div className="mt-2.5 min-w-0">
+            <h3 className="font-medium text-sm sm:text-base text-white truncate leading-tight">
+              {name}
+            </h3>
           </div>
 
           {/* Integrated One UI Full-Width Dimmer Track (matching exact light color) */}

@@ -139,6 +139,29 @@ export const RoomsView: React.FC<RoomsViewProps> = ({
 
   return (
     <div className="space-y-4 max-w-4xl mx-auto w-full animate-in fade-in duration-300">
+      {/* Top Navigation Bar: Quick Return to Favorites/Dashboard */}
+      <div className="flex items-center justify-between pb-1">
+        <button
+          type="button"
+          onClick={() => onSelectRoom('favorites')}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full oneui-glass text-xs font-medium text-slate-300 hover:text-white transition-all duration-200 hover:border-white/20 active:scale-95 border border-white/10 shadow-sm"
+        >
+          <ChevronRight size={16} className="rotate-180" />
+          <span>Voltar ao Dashboard</span>
+        </button>
+
+        {!isEditMode && !isAdding && (
+          <button
+            type="button"
+            onClick={() => setIsAdding(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-blue-400 hover:text-white hover:bg-blue-600/20 transition-all border border-blue-500/20"
+          >
+            <Plus size={14} />
+            <span>Novo Cômodo</span>
+          </button>
+        )}
+      </div>
+
       {/* Header Info when in Edit Mode */}
       {isEditMode && (
         <div className="p-4 rounded-2xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-between">

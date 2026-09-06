@@ -236,6 +236,14 @@ export function App() {
         onToggleEditMode={() => setIsEditMode(!isEditMode)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         isTV={isTV}
+        onBack={
+          currentNavTab !== 'home'
+            ? () => {
+                setCurrentNavTab('home');
+                setActiveRoomId('favorites');
+              }
+            : undefined
+        }
       />
 
       {/* Room Tabs Pills (only in Home tab) */}
@@ -273,6 +281,10 @@ export function App() {
             isEditMode={isEditMode}
             accentColor={layout.theme.accentColor}
             onTriggerScene={(id) => toggleEntity(id)}
+            onBack={() => {
+              setCurrentNavTab('home');
+              setActiveRoomId('favorites');
+            }}
             onAddSceneWidget={(sceneId, friendlyName) => {
               addWidget({
                 entityId: sceneId,
