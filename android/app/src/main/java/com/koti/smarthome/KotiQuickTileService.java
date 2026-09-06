@@ -1,16 +1,28 @@
 package com.koti.smarthome;
 
+import android.graphics.drawable.Icon;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 public class KotiQuickTileService extends TileService {
 
     @Override
+    public void onTileAdded() {
+        super.onTileAdded();
+        updateTileState();
+    }
+
+    @Override
     public void onStartListening() {
         super.onStartListening();
+        updateTileState();
+    }
+
+    private void updateTileState() {
         Tile tile = getQsTile();
         if (tile != null) {
-            tile.setLabel("Koti Luz Sala");
+            tile.setLabel("Koti Luz");
+            tile.setIcon(Icon.createWithResource(this, R.drawable.ic_qs_light));
             tile.updateTile();
         }
     }
@@ -23,7 +35,6 @@ public class KotiQuickTileService extends TileService {
 
         boolean isCurrentlyActive = (tile.getState() == Tile.STATE_ACTIVE);
 
-        // Toggle state
         if (isCurrentlyActive) {
             tile.setState(Tile.STATE_INACTIVE);
             tile.setSubtitle("Desligado");
@@ -33,7 +44,7 @@ public class KotiQuickTileService extends TileService {
         }
         tile.updateTile();
 
-        // Send Home Assistant command
-        HomeAssistantApiHelper.toggleEntity(getApplicationContext(), "light.living_room_main");
+        // Toggle primary light (Luminaria)
+        HomeAssistantApiHelper.toggleEntity(getApplicationContext(), "light.luminaria_socket_1");
     }
 }

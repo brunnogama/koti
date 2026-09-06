@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useHomeAssistant } from './hooks/useHomeAssistant';
 import { useDeviceType } from './hooks/useDeviceType';
 import { useDashboardStore } from './hooks/useDashboardStore';
@@ -43,6 +43,7 @@ export function App() {
     setIsScreensaverActive,
     updateWidgetSize,
     moveWidget,
+    reorderWidgets,
     toggleFavorite,
     updateWidgetConfig,
     removeWidget,
@@ -90,6 +91,11 @@ export function App() {
   const [isRoomManagerOpen, setIsRoomManagerOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<WidgetConfig | null>(null);
   const [currentNavTab, setCurrentNavTab] = useState<'home' | 'rooms' | 'automations' | 'settings'>('home');
+
+  // Drag & drop reorder state
+  const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
+  const [dragOverWidgetId, setDragOverWidgetId] = useState<string | null>(null);
+  const touchStartRef = useRef<{ id: string; x: number; y: number } | null>(null);
 
   // Filter widgets for current room
   const currentWidgets = useMemo(() => {
@@ -232,91 +238,81 @@ export function App() {
             const entity = entities[w.entityId];
             const domain = w.entityId.split('.')[0];
 
+            let widgetNode = null;
             if (domain === 'weather') {
-              return (
+              widgetNode = (
                 <WeatherWidget
-                  key={w.id}
                   config={w}
                   weather={weather}
                   isEditMode={isEditMode}
                   onRefresh={fetchWeather}
                   onResize={() => cycleWidgetSize(w)}
-                  onMovePrev={() => moveWidget(w.id, 'prev')}
-                  onMoveNext={() => moveWidget(w.id, 'next')}
                   onToggleFavorite={() => toggleFavorite(w.id)}
                   onEdit={() => setEditingWidget(w)}
                   onDelete={() => removeWidget(w.id)}
                 />
               );
-            }
-
-            if (domain === 'light') {
-              return (
+            } else if (domain === 'light') {
+              widgetNode = (
                 <LightWidget
-                  key={w.id}
                   config={w}
                   entity={entity}
                   isEditMode={isEditMode}
                   onToggle={() => toggleEntity(w.entityId)}
                   onBrightnessChange={(val) => setBrightness(w.entityId, val)}
                   onResize={() => cycleWidgetSize(w)}
-                  onMovePrev={() => moveWidget(w.id, 'prev')}
-                  onMoveNext={() => moveWidget(w.id, 'next')}
                   onToggleFavorite={() => toggleFavorite(w.id)}
                   onEdit={() => setEditingWidget(w)}
                   onDelete={() => removeWidget(w.id)}
                 />
               );
-            }
-
-            if (domain === 'switch') {
-              return (
+            } else if (domain === 'switch') {
+              widgetNode = (
                 <SwitchWidget
-                  key={w.id}
                   config={w}
                   entity={entity}
                   isEditMode={isEditMode}
                   onToggle={() => toggleEntity(w.entityId)}
                   onResize={() => cycleWidgetSize(w)}
-                  onMovePrev={() => moveWidget(w.id, 'prev')}
-                  onMoveNext={() => moveWidget(w.id, 'next')}
                   onToggleFavorite={() => toggleFavorite(w.id)}
                   onEdit={() => setEditingWidget(w)}
                   onDelete={() => removeWidget(w.id)}
                 />
               );
-            }
-
-            if (domain === 'climate') {
-              return (
+            } else if (domain === 'climate') {
+              widgetNode = (
                 <ClimateWidget
-                  key={w.id}
                   config={w}
                   entity={entity}
                   isEditMode={isEditMode}
                   onSetTemperature={(temp) => setTemperature(w.entityId, temp)}
                   onTogglePower={() => toggleEntity(w.entityId)}
                   onResize={() => cycleWidgetSize(w)}
-                  onMovePrev={() => moveWidget(w.id, 'prev')}
-                  onMoveNext={() => moveWidget(w.id, 'next')}
                   onToggleFavorite={() => toggleFavorite(w.id)}
                   onEdit={() => setEditingWidget(w)}
                   onDelete={() => removeWidget(w.id)}
                 />
               );
-            }
-
-            if (domain === 'scene') {
-              return (
+            } else if (domain === 'scene') {
+              widgetNode = (
                 <SceneWidget
-                  key={w.id}
                   config={w}
                   entity={entity}
                   isEditMode={isEditMode}
                   onTrigger={() => toggleEntity(w.entityId)}
                   onResize={() => cycleWidgetSize(w)}
-                  onMovePrev={() => moveWidget(w.id, 'prev')}
-                  onMoveNext={() => moveWidget(w.id, 'next')}
+                  onToggleFavorite={() => toggleFavorite(w.id)}
+                  onEdit={() => setEditingWidget(w)}
+                  onDelete={() => removeWidget(w.id)}
+                />
+              );
+            } else {
+              widgetNode = (
+                <SensorWidget
+                  config={w}
+                  entity={entity}
+                  isEditMode={isEditMode}
+                  onResize={() => cycleWidgetSize(w)}
                   onToggleFavorite={() => toggleFavorite(w.id)}
                   onEdit={() => setEditingWidget(w)}
                   onDelete={() => removeWidget(w.id)}
@@ -324,20 +320,89 @@ export function App() {
               );
             }
 
-            // Default fallback is SensorWidget for sensors and binary_sensors
+            const colSpanClass =
+              w.size === '2x1'
+                ? 'col-span-2'
+                : w.size === '2x2'
+                ? 'col-span-2 row-span-2'
+                : 'col-span-1';
+
             return (
-              <SensorWidget
+              <div
                 key={w.id}
-                config={w}
-                entity={entity}
-                isEditMode={isEditMode}
-                onResize={() => cycleWidgetSize(w)}
-                onMovePrev={() => moveWidget(w.id, 'prev')}
-                onMoveNext={() => moveWidget(w.id, 'next')}
-                onToggleFavorite={() => toggleFavorite(w.id)}
-                onEdit={() => setEditingWidget(w)}
-                onDelete={() => removeWidget(w.id)}
-              />
+                data-widget-id={w.id}
+                draggable={isEditMode}
+                onDragStart={(e) => {
+                  if (!isEditMode) return;
+                  e.dataTransfer.setData('text/plain', w.id);
+                  setDraggedWidgetId(w.id);
+                }}
+                onDragOver={(e) => {
+                  if (!isEditMode) return;
+                  e.preventDefault();
+                  if (dragOverWidgetId !== w.id) {
+                    setDragOverWidgetId(w.id);
+                  }
+                }}
+                onDragLeave={() => {
+                  if (dragOverWidgetId === w.id) {
+                    setDragOverWidgetId(null);
+                  }
+                }}
+                onDrop={(e) => {
+                  if (!isEditMode) return;
+                  e.preventDefault();
+                  const sourceId = e.dataTransfer.getData('text/plain') || draggedWidgetId;
+                  if (sourceId && sourceId !== w.id) {
+                    reorderWidgets(sourceId, w.id);
+                  }
+                  setDraggedWidgetId(null);
+                  setDragOverWidgetId(null);
+                }}
+                onDragEnd={() => {
+                  setDraggedWidgetId(null);
+                  setDragOverWidgetId(null);
+                }}
+                onTouchStart={(e) => {
+                  if (!isEditMode) return;
+                  const target = e.target as HTMLElement;
+                  if (target.closest('button') || target.closest('input')) return;
+                  touchStartRef.current = {
+                    id: w.id,
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY,
+                  };
+                }}
+                onTouchMove={(e) => {
+                  if (!isEditMode || !touchStartRef.current) return;
+                  const touch = e.touches[0];
+                  const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                  const cardContainer = targetEl?.closest('[data-widget-id]');
+                  const targetId = cardContainer?.getAttribute('data-widget-id');
+                  if (targetId && targetId !== touchStartRef.current.id) {
+                    setDragOverWidgetId(targetId);
+                    setDraggedWidgetId(touchStartRef.current.id);
+                  }
+                }}
+                onTouchEnd={() => {
+                  if (!isEditMode || !touchStartRef.current) return;
+                  if (dragOverWidgetId && touchStartRef.current.id && dragOverWidgetId !== touchStartRef.current.id) {
+                    reorderWidgets(touchStartRef.current.id, dragOverWidgetId);
+                  }
+                  touchStartRef.current = null;
+                  setDraggedWidgetId(null);
+                  setDragOverWidgetId(null);
+                }}
+                className={`transition-all duration-200 ${colSpanClass} ${
+                  draggedWidgetId === w.id ? 'opacity-40 scale-95' : ''
+                } ${
+                  dragOverWidgetId === w.id
+                    ? 'ring-2 ring-blue-500/80 rounded-[28px] scale-[1.02] shadow-[0_0_25px_rgba(44,117,255,0.4)]'
+                    : ''
+                }`}
+              >
+                {widgetNode}
+              </div>
             );
           })}
 
@@ -405,6 +470,7 @@ export function App() {
         <EditWidgetModal
           isOpen={true}
           widget={editingWidget}
+          defaultName={entities[editingWidget.entityId]?.attributes?.friendly_name || editingWidget.entityId}
           rooms={layout.rooms}
           onClose={() => setEditingWidget(null)}
           onSave={(updates) => updateWidgetConfig(editingWidget.id, updates)}

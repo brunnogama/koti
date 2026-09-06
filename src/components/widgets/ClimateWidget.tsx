@@ -12,8 +12,6 @@ interface ClimateWidgetProps {
   onSetTemperature: (temp: number) => void;
   onTogglePower: () => void;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -26,8 +24,6 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
   onSetTemperature,
   onTogglePower,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onToggleFavorite,
   onEdit,
   onDelete,
@@ -50,8 +46,6 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
         isFavorite={config.isFavorite}
         onToggleFavorite={onToggleFavorite}
         onResize={onResize}
-        onMovePrev={onMovePrev}
-        onMoveNext={onMoveNext}
         onEdit={onEdit}
         onDelete={onDelete}
         onClick={onTogglePower}
@@ -104,8 +98,6 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
       isFavorite={config.isFavorite}
       onToggleFavorite={onToggleFavorite}
       onResize={onResize}
-      onMovePrev={onMovePrev}
-      onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
     >

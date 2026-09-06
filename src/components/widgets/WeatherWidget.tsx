@@ -23,8 +23,6 @@ interface WeatherWidgetProps {
   isEditMode: boolean;
   onRefresh?: () => void;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -36,8 +34,6 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   isEditMode,
   onRefresh,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onToggleFavorite,
   onEdit,
   onDelete,
@@ -84,8 +80,6 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         isFavorite={config.isFavorite}
         onToggleFavorite={onToggleFavorite}
         onResize={onResize}
-        onMovePrev={onMovePrev}
-        onMoveNext={onMoveNext}
         onEdit={onEdit}
         onDelete={onDelete}
       >
@@ -128,8 +122,6 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
       isFavorite={config.isFavorite}
       onToggleFavorite={onToggleFavorite}
       onResize={onResize}
-      onMovePrev={onMovePrev}
-      onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
     >

@@ -11,8 +11,6 @@ interface SwitchWidgetProps {
   isEditMode: boolean;
   onToggle: () => void;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -24,8 +22,6 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
   isEditMode,
   onToggle,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onToggleFavorite,
   onEdit,
   onDelete,
@@ -59,8 +55,6 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
         isFavorite={config.isFavorite}
         onToggleFavorite={onToggleFavorite}
         onResize={onResize}
-        onMovePrev={onMovePrev}
-        onMoveNext={onMoveNext}
         onEdit={onEdit}
         onDelete={onDelete}
         onClick={handleToggle}
@@ -114,8 +108,6 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
       isFavorite={config.isFavorite}
       onToggleFavorite={onToggleFavorite}
       onResize={onResize}
-      onMovePrev={onMovePrev}
-      onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
       onClick={handleToggle}

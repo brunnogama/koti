@@ -6,6 +6,7 @@ import { GADGET_ICON_CATEGORIES } from '../oneui/DynamicIcon';
 
 interface EditWidgetModalProps {
   widget: WidgetConfig;
+  defaultName?: string;
   rooms: RoomConfig[];
   isOpen: boolean;
   onClose: () => void;
@@ -23,12 +24,13 @@ const COLOR_PRESETS = [
 
 export const EditWidgetModal: React.FC<EditWidgetModalProps> = ({
   widget,
+  defaultName = '',
   rooms,
   isOpen,
   onClose,
   onSave,
 }) => {
-  const [name, setName] = useState(widget.customName || '');
+  const [name, setName] = useState(widget.customName || defaultName || '');
   const [size, setSize] = useState<WidgetSize>(widget.size);
   const [color, setColor] = useState(widget.customColor || '#2C75FF');
   const [icon, setIcon] = useState(widget.customIcon || '');

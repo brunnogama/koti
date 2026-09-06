@@ -13,8 +13,6 @@ interface LightWidgetProps {
   onToggle: () => void;
   onBrightnessChange: (val: number) => void;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -27,8 +25,6 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
   onToggle,
   onBrightnessChange,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onToggleFavorite,
   onEdit,
   onDelete,
@@ -97,6 +93,10 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
       lastVibratePct.current = clamped;
     }
 
+    if (!isOn && clamped > 0) {
+      onToggle();
+    }
+
     onBrightnessChange(Math.round((clamped / 100) * 255));
   };
 
@@ -114,8 +114,6 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
         isFavorite={config.isFavorite}
         onToggleFavorite={onToggleFavorite}
         onResize={onResize}
-        onMovePrev={onMovePrev}
-        onMoveNext={onMoveNext}
         onEdit={onEdit}
         onDelete={onDelete}
       >
@@ -198,8 +196,6 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
       isFavorite={config.isFavorite}
       onToggleFavorite={onToggleFavorite}
       onResize={onResize}
-      onMovePrev={onMovePrev}
-      onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
       onClick={() => {
@@ -248,45 +244,42 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
           </span>
         </div>
 
-        {/* Title and Status */}
+        {/* Title and Dimmer Control (Always visible in place of 'Toque para ligar') */}
         <div className="mt-2">
           <h3 className="font-medium text-base text-white truncate">{name}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {isOn ? 'Ligada' : 'Toque para ligar'}
-          </p>
+
+          {/* Integrated One UI Dimmer Track */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            className="mt-2 touch-none cursor-ew-resize py-0.5"
+            title="Deslize horizontalmente para ajustar o brilho"
+          >
+            <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium">
+              <span className="text-slate-400">{isOn ? 'Brilho' : 'Desligada'}</span>
+              <span className={isOn ? 'text-white font-semibold' : 'text-slate-500'}>
+                {displayBrightness}%
+              </span>
+            </div>
+            <div className="relative w-full h-4 rounded-full bg-white/10 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-[width] duration-75"
+                style={{
+                  width: `${displayBrightness}%`,
+                  backgroundColor: isOn ? accentColor : 'rgba(255, 255, 255, 0.2)',
+                  boxShadow: isOn ? `0 0 12px ${accentColor}99` : 'none',
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Direct Drag Dimmer on 1x1 cards */}
-      {config.size === '1x1' && isOn && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          className="mt-3 pt-2 border-t border-white/10 touch-none cursor-ew-resize"
-          title="Deslize horizontalmente para ajustar brilho"
-        >
-          <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-            <span>Dimmer</span>
-            <span className="font-medium text-white">{displayBrightness}%</span>
-          </div>
-          <div className="relative w-full h-3.5 rounded-full bg-white/10 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-[width] duration-75"
-              style={{
-                width: `${displayBrightness}%`,
-                backgroundColor: accentColor,
-                boxShadow: `0 0 10px ${accentColor}88`,
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Expanded Slider for 2x1 and 2x2 cards */}
-      {config.size !== '1x1' && isOn && (
+      {/* Expanded Slider for 2x2 cards */}
+      {config.size === '2x2' && isOn && (
         <div className="mt-3 pt-2 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
           <OneUISlider
             value={displayBrightness}
@@ -295,7 +288,7 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
               onBrightnessChange(Math.round((val / 100) * 255));
             }}
             accentColor={accentColor}
-            label="Intensidade"
+            label="Ajuste Fino"
           />
         </div>
       )}

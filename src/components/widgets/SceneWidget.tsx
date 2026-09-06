@@ -11,8 +11,6 @@ interface SceneWidgetProps {
   isEditMode: boolean;
   onTrigger: () => void;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -24,8 +22,6 @@ export const SceneWidget: React.FC<SceneWidgetProps> = ({
   isEditMode,
   onTrigger,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onToggleFavorite,
   onEdit,
   onDelete,
@@ -61,8 +57,6 @@ export const SceneWidget: React.FC<SceneWidgetProps> = ({
         isFavorite={config.isFavorite}
         onToggleFavorite={onToggleFavorite}
         onResize={onResize}
-        onMovePrev={onMovePrev}
-        onMoveNext={onMoveNext}
         onEdit={onEdit}
         onDelete={onDelete}
         onClick={handleClick}
@@ -110,8 +104,6 @@ export const SceneWidget: React.FC<SceneWidgetProps> = ({
       isFavorite={config.isFavorite}
       onToggleFavorite={onToggleFavorite}
       onResize={onResize}
-      onMovePrev={onMovePrev}
-      onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
       onClick={handleClick}

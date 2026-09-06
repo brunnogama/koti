@@ -62,101 +62,105 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   };
 
   return (
-    <header className="relative w-full pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-3 px-6 md:px-10 transition-all duration-300">
-      {/* Top action row */}
-      <div className="flex items-center justify-between mb-4 md:mb-5">
-        {/* Left: Connection status + Weather Pill */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">
-            {connectionStatus === 'connected' ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <Wifi size={14} className="text-emerald-400" />
-                <span className="text-emerald-300">Online</span>
-              </>
-            ) : connectionStatus === 'connecting' ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                <span className="text-amber-300">Conectando...</span>
-              </>
-            ) : (
-              <>
-                <WifiOff size={14} className="text-rose-400" />
-                <span className="text-rose-300">Desconectado</span>
-              </>
+    <>
+      {/* Sticky Frosted Glass Top Bar (Protects Android status bar & icons when scrolling) */}
+      <div className="sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 px-6 md:px-10 backdrop-blur-2xl bg-[#0d0f12]/85 border-b border-white/5 transition-all duration-300">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          {/* Left: Connection status + Weather Pill */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">
+              {connectionStatus === 'connected' ? (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <Wifi size={14} className="text-emerald-400" />
+                  <span className="text-emerald-300">Online</span>
+                </>
+              ) : connectionStatus === 'connecting' ? (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                  <span className="text-amber-300">Conectando...</span>
+                </>
+              ) : (
+                <>
+                  <WifiOff size={14} className="text-rose-400" />
+                  <span className="text-rose-300">Desconectado</span>
+                </>
+              )}
+            </div>
+
+            {weather && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium text-slate-300">
+                {getWeatherIcon(weather.conditionCode)}
+                <span>{weather.temperature}°C</span>
+                <span className="hidden sm:inline text-slate-400">• {weather.cityName}</span>
+              </div>
             )}
           </div>
 
-          {weather && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium text-slate-300">
-              {getWeatherIcon(weather.conditionCode)}
-              <span>{weather.temperature}°C</span>
-              <span className="hidden sm:inline text-slate-400">• {weather.cityName}</span>
-            </div>
-          )}
-        </div>
+          {/* Right controls */}
+          <div className="flex items-center gap-2">
+            {/* TV Mode Toggle button */}
+            <button
+              onClick={onToggleTVMode}
+              title={isTV ? "Modo TV Ativo (Navegação D-Pad)" : "Ativar Modo TV"}
+              className={`p-2.5 rounded-full transition-all duration-200 ${
+                isTV
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'oneui-glass text-slate-300 hover:text-white'
+              }`}
+            >
+              <Tv size={18} />
+            </button>
 
-        {/* Right controls */}
-        <div className="flex items-center gap-2">
-          {/* TV Mode Toggle button */}
-          <button
-            onClick={onToggleTVMode}
-            title={isTV ? "Modo TV Ativo (Navegação D-Pad)" : "Ativar Modo TV"}
-            className={`p-2.5 rounded-full transition-all duration-200 ${
-              isTV
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                : 'oneui-glass text-slate-300 hover:text-white'
-            }`}
-          >
-            <Tv size={18} />
-          </button>
+            {/* Edit Dashboard Button (Icon Only) */}
+            <button
+              onClick={onToggleEditMode}
+              title={isEditMode ? 'Concluir edição' : 'Editar Dashboard'}
+              className={`p-2.5 rounded-full transition-all duration-200 ${
+                isEditMode
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40'
+                  : 'oneui-glass text-slate-300 hover:text-white'
+              }`}
+            >
+              {isEditMode ? <Check size={18} /> : <Edit3 size={18} />}
+            </button>
 
-          {/* Edit Dashboard Button (Icon Only) */}
-          <button
-            onClick={onToggleEditMode}
-            title={isEditMode ? 'Concluir edição' : 'Editar Dashboard'}
-            className={`p-2.5 rounded-full transition-all duration-200 ${
-              isEditMode
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40'
-                : 'oneui-glass text-slate-300 hover:text-white'
-            }`}
-          >
-            {isEditMode ? <Check size={18} /> : <Edit3 size={18} />}
-          </button>
-
-          {/* Settings Button */}
-          <button
-            onClick={onOpenSettings}
-            className="p-2.5 rounded-full oneui-glass text-slate-300 hover:text-white transition-all duration-200 hover:rotate-45"
-            title="Ajustes"
-          >
-            <Settings size={18} />
-          </button>
+            {/* Settings Button */}
+            <button
+              onClick={onOpenSettings}
+              className="p-2.5 rounded-full oneui-glass text-slate-300 hover:text-white transition-all duration-200 hover:rotate-45"
+              title="Ajustes"
+            >
+              <Settings size={18} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Large Reachability Samsung One UI Area */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 pt-2 pb-1">
-        <div>
-          <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold capitalize mb-1">
-            {dateStr}
+      <header className="relative w-full pt-4 pb-2 px-6 md:px-10 max-w-7xl mx-auto transition-all duration-300">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 pt-2 pb-1">
+          <div>
+            <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold capitalize mb-1">
+              {dateStr}
+            </div>
+            {/* Dynamic greeting with user's name */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white">
+              {getGreeting()}
+            </h1>
+            <p className="text-sm md:text-base text-slate-400 mt-1.5 font-normal">
+              {subtitle || `${activeDevicesCount} aparelhos ativos no momento`}
+            </p>
           </div>
-          {/* Dynamic greeting with user's name */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white">
-            {getGreeting()}
-          </h1>
-          <p className="text-sm md:text-base text-slate-400 mt-1.5 font-normal">
-            {subtitle || `${activeDevicesCount} aparelhos ativos no momento`}
-          </p>
-        </div>
 
-        {/* Digital Clock Display */}
-        <div className="hidden md:block text-right">
-          <div className="text-3xl font-extralight text-white/90 tracking-wide">
-            {time}
+          {/* Digital Clock Display */}
+          <div className="hidden md:block text-right">
+            <div className="text-3xl font-extralight text-white/90 tracking-wide">
+              {time}
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };

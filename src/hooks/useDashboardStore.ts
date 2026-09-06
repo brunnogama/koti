@@ -73,6 +73,35 @@ export function useDashboardStore() {
     saveCurrentLayout(updated);
   }, [layout, activeRoomId, saveCurrentLayout]);
 
+  const reorderWidgets = useCallback((sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+
+    const roomWidgets = layout.widgets
+      .filter((w) => (activeRoomId === 'favorites' ? w.isFavorite : w.roomId === activeRoomId))
+      .sort((a, b) => a.order - b.order);
+
+    const sourceIndex = roomWidgets.findIndex((w) => w.id === sourceId);
+    const targetIndex = roomWidgets.findIndex((w) => w.id === targetId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    const reordered = [...roomWidgets];
+    const [moved] = reordered.splice(sourceIndex, 1);
+    reordered.splice(targetIndex, 0, moved);
+
+    const orderMap = new Map(reordered.map((w, idx) => [w.id, idx]));
+
+    const updated = {
+      ...layout,
+      widgets: layout.widgets.map((w) => {
+        if (orderMap.has(w.id)) {
+          return { ...w, order: orderMap.get(w.id)! };
+        }
+        return w;
+      }),
+    };
+    saveCurrentLayout(updated);
+  }, [layout, activeRoomId, saveCurrentLayout]);
+
   const toggleFavorite = useCallback((widgetId: string) => {
     const updated = {
       ...layout,
@@ -175,6 +204,7 @@ export function useDashboardStore() {
     setIsScreensaverActive,
     updateWidgetSize,
     moveWidget,
+    reorderWidgets,
     toggleFavorite,
     updateWidgetConfig,
     removeWidget,

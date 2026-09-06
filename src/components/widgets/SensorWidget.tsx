@@ -10,8 +10,6 @@ interface SensorWidgetProps {
   entity?: HAEntityState;
   isEditMode: boolean;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -22,8 +20,6 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
   entity,
   isEditMode,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onToggleFavorite,
   onEdit,
   onDelete,
@@ -74,8 +70,6 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
         isFavorite={config.isFavorite}
         onToggleFavorite={onToggleFavorite}
         onResize={onResize}
-        onMovePrev={onMovePrev}
-        onMoveNext={onMoveNext}
         onEdit={onEdit}
         onDelete={onDelete}
       >
@@ -118,8 +112,6 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
       isFavorite={config.isFavorite}
       onToggleFavorite={onToggleFavorite}
       onResize={onResize}
-      onMovePrev={onMovePrev}
-      onMoveNext={onMoveNext}
       onEdit={onEdit}
       onDelete={onDelete}
     >

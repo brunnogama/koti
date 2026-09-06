@@ -1,5 +1,5 @@
 import React from 'react';
-import { Maximize2, MoveHorizontal, Trash2, Edit2, Star } from 'lucide-react';
+import { Maximize2, Trash2, Edit2, Star } from 'lucide-react';
 import { WidgetSize } from '../../types/dashboard';
 
 interface OneUICardProps {
@@ -10,10 +10,11 @@ interface OneUICardProps {
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
   onResize?: () => void;
-  onMovePrev?: () => void;
-  onMoveNext?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
@@ -27,10 +28,11 @@ export const OneUICard: React.FC<OneUICardProps> = ({
   isFavorite = false,
   onToggleFavorite,
   onResize,
-  onMovePrev,
-  onMoveNext,
   onEdit,
   onDelete,
+  onDragStart,
+  onDragOver,
+  onDrop,
   children,
   className = '',
   onClick,
@@ -47,13 +49,19 @@ export const OneUICard: React.FC<OneUICardProps> = ({
 
   return (
     <div
-      onClick={!isEditMode ? onClick : undefined}
+      onClick={!isEditMode ? onClick : onEdit}
+      draggable={isEditMode}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
       className={`relative group transition-all duration-300 select-none overflow-hidden outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 tv-focusable ${colSpanClass} ${
         isPill ? 'rounded-[22px] p-3 min-h-[64px]' : 'rounded-[28px] p-5 min-h-[140px]'
       } ${
         isActive
           ? 'bg-slate-900/75 border-white/15'
           : 'bg-slate-950/45 border-white/10'
+      } ${
+        isEditMode ? 'cursor-grab active:cursor-grabbing hover:border-white/30' : ''
       } backdrop-blur-2xl border shadow-xl hover:border-white/25 hover:shadow-2xl active:scale-[0.98] ${className}`}
       tabIndex={0}
     >
@@ -81,36 +89,10 @@ export const OneUICard: React.FC<OneUICardProps> = ({
                 e.stopPropagation();
                 onResize();
               }}
-              title="Redimensionar Widget (1x1 -> 2x1 -> 2x2)"
+              title="Redimensionar Widget (Pílula -> 1x1 -> 2x1 -> 2x2)"
               className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Maximize2 size={13} />
-            </button>
-          )}
-
-          {onMovePrev && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onMovePrev();
-              }}
-              title="Mover para a esquerda/cima"
-              className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <MoveHorizontal size={13} className="rotate-180" />
-            </button>
-          )}
-
-          {onMoveNext && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onMoveNext();
-              }}
-              title="Mover para a direita/baixo"
-              className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <MoveHorizontal size={13} />
             </button>
           )}
 
@@ -120,7 +102,7 @@ export const OneUICard: React.FC<OneUICardProps> = ({
                 e.stopPropagation();
                 onEdit();
               }}
-              title="Editar Card"
+              title="Renomear e Personalizar"
               className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Edit2 size={13} />

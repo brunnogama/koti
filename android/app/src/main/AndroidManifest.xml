@@ -68,16 +68,34 @@
                 android:resource="@xml/widget_multi_button_info" />
         </receiver>
 
-        <!-- Quick Settings Tile: Botão na Área de Controle / Notificações -->
+        <!-- Quick Settings Tile 1: Koti Luz -->
         <service
             android:name=".KotiQuickTileService"
-            android:label="Koti Luz Sala"
-            android:icon="@mipmap/ic_launcher"
+            android:label="Koti Luz"
+            android:icon="@drawable/ic_qs_light"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
+        </service>
+
+        <!-- Quick Settings Tile 2: Apagar Tudo -->
+        <service
+            android:name=".KotiAllOffTileService"
+            android:label="Apagar Tudo"
+            android:icon="@drawable/ic_qs_power"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
         </service>
     </application>
 
