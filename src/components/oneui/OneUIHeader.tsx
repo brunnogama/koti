@@ -65,33 +65,16 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
 
   return (
     <>
-      {/* Sticky Frosted Glass Top Bar (Protects Android status bar & icons when scrolling) */}
+      {/* Top Bar with Welcome Greeting on the Left and Actions on the Right */}
       <div className="sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 px-6 md:px-10 backdrop-blur-2xl bg-[#0d0f12]/85 border-b border-white/5 transition-all duration-300">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          {/* Left: Connection status + Weather Pill */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">
-              {connectionStatus === 'connected' ? (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <Wifi size={14} className="text-emerald-400" />
-                  <span className="text-emerald-300">Online</span>
-                </>
-              ) : connectionStatus === 'connecting' ? (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                  <span className="text-amber-300">Conectando...</span>
-                </>
-              ) : (
-                <>
-                  <WifiOff size={14} className="text-rose-400" />
-                  <span className="text-rose-300">Desconectado</span>
-                </>
-              )}
-            </div>
-
+          {/* Left: Welcome Greeting + Weather underneath */}
+          <div className="flex flex-col min-w-0 pr-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-light tracking-tight text-white leading-tight truncate">
+              {title || getGreeting()}
+            </h1>
             {weather && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium text-slate-300">
+              <div className="flex items-center gap-1.5 mt-1 text-xs font-medium text-slate-300">
                 {getWeatherIcon(weather.conditionCode)}
                 <span>{weather.temperature}°C</span>
                 <span className="hidden sm:inline text-slate-400">• {weather.cityName}</span>
@@ -99,8 +82,8 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
             )}
           </div>
 
-          {/* Right controls */}
-          <div className="flex items-center gap-2">
+          {/* Right controls: [Edit] [Online Status Icon] [Settings] */}
+          <div className="flex items-center gap-2 shrink-0">
             {/* Edit Dashboard Button (Icon Only) */}
             <button
               onClick={onToggleEditMode}
@@ -114,6 +97,26 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
               {isEditMode ? <Check size={18} /> : <Edit3 size={18} />}
             </button>
 
+            {/* Online Status: apenas um ícone ao lado direito do botão de editar */}
+            <div
+              className="p-2.5 rounded-full oneui-glass transition-all duration-200 flex items-center justify-center cursor-default"
+              title={
+                connectionStatus === 'connected'
+                  ? 'Home Assistant Conectado'
+                  : connectionStatus === 'connecting'
+                  ? 'Conectando ao Home Assistant...'
+                  : 'Desconectado do Home Assistant'
+              }
+            >
+              {connectionStatus === 'connected' ? (
+                <Wifi size={18} className="text-emerald-400" />
+              ) : connectionStatus === 'connecting' ? (
+                <Wifi size={18} className="text-amber-400 animate-pulse" />
+              ) : (
+                <WifiOff size={18} className="text-rose-400" />
+              )}
+            </div>
+
             {/* Settings Button */}
             <button
               onClick={onOpenSettings}
@@ -125,25 +128,6 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Clean One UI Greeting Area */}
-      <header className="relative w-full pt-2 pb-1 px-6 md:px-10 max-w-7xl mx-auto transition-all duration-300">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            {/* Dynamic greeting with user's name only */}
-            <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-              {title || getGreeting()}
-            </h1>
-          </div>
-
-          {/* Digital Clock Display */}
-          <div className="hidden sm:block text-right">
-            <div className="text-2xl sm:text-3xl font-extralight text-white/90 tracking-wide">
-              {time}
-            </div>
-          </div>
-        </div>
-      </header>
     </>
   );
 };

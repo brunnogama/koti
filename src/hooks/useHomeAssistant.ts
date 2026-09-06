@@ -72,6 +72,13 @@ export function useHomeAssistant() {
     });
   }, [callService]);
 
+  const setLightColor = useCallback((entityId: string, rgb: [number, number, number]) => {
+    callService('light', 'turn_on', {
+      entity_id: entityId,
+      rgb_color: rgb,
+    });
+  }, [callService]);
+
   const setTemperature = useCallback((entityId: string, temp: number) => {
     callService('climate', 'set_temperature', {
       entity_id: entityId,
@@ -87,6 +94,7 @@ export function useHomeAssistant() {
     callService,
     toggleEntity,
     setBrightness,
+    setLightColor,
     setTemperature,
   };
 }

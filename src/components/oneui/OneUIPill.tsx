@@ -52,8 +52,9 @@ export const OneUIPill: React.FC<OneUIPillsProps> = ({
               >
                 <Icons.Star
                   size={18}
-                  fill={isActive ? 'currentColor' : 'none'}
-                  className={isActive ? 'text-amber-300' : 'text-slate-300'}
+                  fill="none"
+                  strokeWidth={2}
+                  className={isActive ? 'text-white' : 'text-slate-300'}
                 />
               </button>
             );

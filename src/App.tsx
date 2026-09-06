@@ -30,6 +30,7 @@ export function App() {
     updateConfig: onSaveHAConfig,
     toggleEntity,
     setBrightness,
+    setLightColor,
     setTemperature,
   } = useHomeAssistant();
 
@@ -320,6 +321,7 @@ export function App() {
                   isEditMode={isEditMode}
                   onToggle={() => toggleEntity(w.entityId)}
                   onBrightnessChange={(val) => setBrightness(w.entityId, val)}
+                  onColorChange={(rgb) => setLightColor(w.entityId, rgb)}
                   onResize={() => cycleWidgetSize(w)}
                   onToggleFavorite={() => toggleFavorite(w.id)}
                   onEdit={() => setEditingWidget(w)}
