@@ -52,19 +52,27 @@ export const storageService = {
   },
 
   getHAConfig(): HAConnectionConfig {
+    const DEFAULT_HA: HAConnectionConfig = {
+      host: '10.0.0.32',
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkOTNkYzMzNThhNjM0Yjk5YTI2NTBmNmQ3YzBjZmE2YSIsImlhdCI6MTc4ODY2NDE3MSwiZXhwIjoyMTA0MDI0MTcxfQ.Lw1amud6b6Fs3moZXlfIYzVe21aT4DFeve-fanx6cXA',
+      useDemoMode: false,
+    };
+
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.HA_CONFIG);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        return {
+          host: parsed.host || DEFAULT_HA.host,
+          token: parsed.token || DEFAULT_HA.token,
+          useDemoMode: parsed.useDemoMode !== undefined ? parsed.useDemoMode : false,
+        };
       }
     } catch (e) {
       console.error('Failed to load HA config from localStorage', e);
     }
-    return {
-      host: '192.168.1.100:8123',
-      token: '',
-      useDemoMode: true,
-    };
+    return DEFAULT_HA;
   },
 
   saveHAConfig(config: HAConnectionConfig): void {

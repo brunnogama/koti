@@ -62,9 +62,9 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
   };
 
   return (
-    <header className="relative w-full pt-[calc(env(safe-area-inset-top,0px)+3.75rem)] pb-4 px-6 md:px-10 transition-all duration-300">
+    <header className="relative w-full pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-3 px-6 md:px-10 transition-all duration-300">
       {/* Top action row */}
-      <div className="flex items-center justify-between mb-8 md:mb-10">
+      <div className="flex items-center justify-between mb-4 md:mb-5">
         {/* Left: Connection status + Weather Pill */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full oneui-glass-pill text-xs font-medium">

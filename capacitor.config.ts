@@ -5,10 +5,11 @@ const config: CapacitorConfig = {
   appName: 'Koti',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
+    androidScheme: 'http',
     cleartext: true, // Allow local network HTTP/WS connections to Raspberry Pi
   },
   android: {
+    allowMixedContent: true,
     buildOptions: {
       keystorePath: undefined,
       keystoreAlias: undefined,

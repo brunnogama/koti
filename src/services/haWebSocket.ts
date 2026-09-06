@@ -29,9 +29,34 @@ class HAWebSocketClient {
     this.notifyStatus('connecting');
 
     // Normalize URL
-    let cleanHost = config.host.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '').replace(/\/$/, '');
-    const protocol = config.host.startsWith('https') ? 'wss' : 'ws';
-    const wsUrl = `${protocol}://${cleanHost}/api/websocket`;
+    let cleanHost = config.host.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
+    const isHttps = config.host.toLowerCase().startsWith('https');
+    const wsProtocol = isHttps ? 'wss' : 'ws';
+    const httpProtocol = isHttps ? 'https' : 'http';
+    const wsUrl = `${wsProtocol}://${cleanHost}/api/websocket`;
+
+    // Immediate REST fetch to quickly populate entities
+    if (config.token) {
+      fetch(`${httpProtocol}://${cleanHost}/api/states`, {
+        headers: {
+          Authorization: `Bearer ${config.token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((states) => {
+          if (Array.isArray(states)) {
+            states.forEach((entity: HAEntityState) => {
+              this.entities.set(entity.entity_id, entity);
+              this.notifyStateChange(entity.entity_id, entity);
+            });
+            this.notifyStatus('connected');
+          }
+        })
+        .catch((e) => {
+          console.warn('[Koti HA] REST fetch initial states error', e);
+        });
+    }
 
     try {
       this.ws = new WebSocket(wsUrl);
@@ -133,13 +158,28 @@ class HAWebSocketClient {
       return;
     }
 
-    this.sendMessage({
-      id: this.messageId++,
-      type: 'call_service',
-      domain,
-      service,
-      service_data: serviceData,
-    });
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.sendMessage({
+        id: this.messageId++,
+        type: 'call_service',
+        domain,
+        service,
+        service_data: serviceData,
+      });
+    } else if (this.config?.token) {
+      // Direct REST fallback
+      const isHttps = this.config.host.toLowerCase().startsWith('https');
+      const httpProtocol = isHttps ? 'https' : 'http';
+      const cleanHost = this.config.host.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
+      fetch(`${httpProtocol}://${cleanHost}/api/services/${domain}/${service}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.config.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(serviceData),
+      }).catch((err) => console.error('[Koti HA] REST fallback error', err));
+    }
   }
 
   private simulateDemoServiceCall(domain: string, service: string, serviceData: Record<string, any>) {
