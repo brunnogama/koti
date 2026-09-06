@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
-import { X, Server, Palette, Download, Upload, RotateCcw, Check, Sparkles, Sliders, User, MapPin } from 'lucide-react';
+import {
+  X,
+  Server,
+  Palette,
+  Download,
+  Upload,
+  RotateCcw,
+  Check,
+  Sparkles,
+  Sliders,
+  User,
+  MapPin,
+  LayoutGrid,
+  Smartphone,
+  BellRing,
+} from 'lucide-react';
 import { HAConnectionConfig } from '../../types/homeAssistant';
 import { ThemeConfig, ThemePreset } from '../../types/dashboard';
 
@@ -53,7 +68,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onImportLayout,
   onResetLayout,
 }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'ha' | 'theme' | 'backup'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'ha' | 'theme' | 'widgets' | 'backup'>('profile');
   const [nameInput, setNameInput] = useState(userName);
   const [cityInput, setCityInput] = useState(city || '');
   const [host, setHost] = useState(haConfig.host);
@@ -152,6 +167,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           >
             <Palette size={14} />
             <span>Tema One UI</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('widgets')}
+            className={`flex-1 min-w-[120px] py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === 'widgets'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutGrid size={14} />
+            <span>Widgets Android</span>
           </button>
 
           <button
@@ -376,6 +403,133 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <option value={5}>5 minutos de inatividade</option>
                   <option value={10}>10 minutos de inatividade</option>
                 </select>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: ANDROID WIDGETS & NOTIFICATION TILES */}
+          {activeTab === 'widgets' && (
+            <div className="space-y-6">
+              {/* Introduction Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/20">
+                <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                  <Smartphone size={16} className="text-blue-400" />
+                  Controle Direto pelo Android
+                </h3>
+                <p className="text-xs text-slate-300 mt-1">
+                  O Koti suporta widgets nativos da tela inicial do Android e botões na cortina de notificações da Samsung One UI, permitindo controlar seus aparelhos sem precisar abrir o app!
+                </p>
+              </div>
+
+              {/* SECTION 1: HOME SCREEN WIDGETS */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <LayoutGrid size={14} className="text-cyan-400" />
+                  Widgets da Tela Inicial (Launcher)
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Single Button 1x1 Widget Card */}
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">Botão Rápido (1x1)</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-medium">
+                          Compacto
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        Um interruptor discreto na sua tela inicial para ligar ou desligar um aparelho com um único toque.
+                      </p>
+                    </div>
+
+                    {/* Visual mockup */}
+                    <div className="mt-3 p-3 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-blue-600/30 text-blue-400 flex items-center justify-center">
+                        <Smartphone size={18} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-white">Luz Principal</div>
+                        <div className="text-[10px] text-emerald-400">Toque para alternar</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Multi-button 4x2 Block Widget Card */}
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">Painel de Botões (4x2)</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
+                          Bloco Completo
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        Um mosaico com 4 atalhos rápidos personalizáveis em estilo vidro fosco Samsung One UI.
+                      </p>
+                    </div>
+
+                    {/* Visual mockup */}
+                    <div className="mt-3 p-2.5 rounded-2xl bg-slate-900/80 border border-white/10 grid grid-cols-2 gap-1.5 text-center">
+                      <div className="p-1.5 rounded-xl bg-white/5 text-[10px] text-amber-300">💡 Luz Sala</div>
+                      <div className="p-1.5 rounded-xl bg-white/5 text-[10px] text-blue-300">💡 Quarto</div>
+                      <div className="p-1.5 rounded-xl bg-white/5 text-[10px] text-purple-300">🎬 Cinema</div>
+                      <div className="p-1.5 rounded-xl bg-white/5 text-[10px] text-emerald-300">🔌 Setup</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/5 text-xs text-slate-300">
+                  <span className="font-semibold text-white">Como adicionar na tela inicial:</span>
+                  <ol className="list-decimal list-inside space-y-1 mt-1 text-[11px] text-slate-400">
+                    <li>Pressione e segure em qualquer espaço vazio da tela inicial do celular.</li>
+                    <li>Toque em <strong>Widgets</strong> e procure por <strong>Koti</strong>.</li>
+                    <li>Escolha entre <em>Botão Rápido (1x1)</em> ou <em>Painel de Botões</em> e arraste para a tela.</li>
+                  </ol>
+                </div>
+              </div>
+
+              {/* SECTION 2: NOTIFICATION QUICK SETTINGS TILES */}
+              <div className="space-y-3 pt-3 border-t border-white/10">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <BellRing size={14} className="text-amber-400" />
+                  Área de Controle / Notificações (Quick Settings)
+                </h4>
+
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-white">Atalho Rápido na Cortina</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-medium">
+                      One UI Control
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-3">
+                    Adiciona botões direto no menu que você puxa de cima para baixo no Android (ao lado do Wi-Fi, Lanterna e Bluetooth).
+                  </p>
+
+                  {/* Mockup */}
+                  <div className="p-3 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <Smartphone size={20} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">Koti Luz Sala</div>
+                        <div className="text-[10px] text-slate-400">Ativado • Acesso instantâneo</div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-600/30 text-blue-300">
+                      Disponível
+                    </span>
+                  </div>
+
+                  <div className="mt-3 p-3 rounded-xl bg-white/5 text-[11px] text-slate-400 space-y-1">
+                    <span className="font-semibold text-white">Como adicionar aos atalhos rápidos:</span>
+                    <p>1. Deslize para baixo duas vezes a barra de notificações do seu celular Samsung/Android.</p>
+                    <p>2. Toque no ícone de lápis ou nos 3 pontinhos no canto superior e selecione <strong>Editar botões</strong>.</p>
+                    <p>3. Encontre o botão <strong>Koti Luz Sala</strong> na lista e arraste para os atalhos principais.</p>
+                  </div>
+                </div>
               </div>
             </div>
           )}
