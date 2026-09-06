@@ -119,8 +119,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div className="w-full max-w-xl oneui-glass rounded-[32px] p-6 md:p-8 shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <Sliders size={20} className="text-blue-400" />
+          <div className="flex items-center gap-3">
+            <img src="/koti_icon.jpg" alt="Koti" className="w-8 h-8 rounded-xl shadow-md border border-white/20" />
             <h2 className="text-xl font-light text-white">Ajustes do Koti</h2>
           </div>
           <button
