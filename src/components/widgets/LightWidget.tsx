@@ -4,6 +4,7 @@ import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig } from '../../types/dashboard';
 import { OneUICard } from '../oneui/OneUICard';
 import { OneUISlider } from '../oneui/OneUISlider';
+import { DynamicIcon } from '../oneui/DynamicIcon';
 
 interface LightWidgetProps {
   config: WidgetConfig;
@@ -72,7 +73,9 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
                 : undefined
             }
           >
-            <Lightbulb
+            <DynamicIcon
+              name={config.customIcon}
+              defaultIcon={Lightbulb}
               size={24}
               className={isOn ? 'filter drop-shadow-[0_0_8px_currentColor]' : ''}
             />

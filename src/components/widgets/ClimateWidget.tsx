@@ -3,6 +3,7 @@ import { Wind, Plus, Minus, Power } from 'lucide-react';
 import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig } from '../../types/dashboard';
 import { OneUICard } from '../oneui/OneUICard';
+import { DynamicIcon } from '../oneui/DynamicIcon';
 
 interface ClimateWidgetProps {
   config: WidgetConfig;
@@ -60,7 +61,7 @@ export const ClimateWidget: React.FC<ClimateWidgetProps> = ({
               color: !isOff ? accentColor : '#94a3b8',
             }}
           >
-            <Wind size={22} />
+            <DynamicIcon name={config.customIcon} defaultIcon={Wind} size={22} />
           </div>
 
           <button

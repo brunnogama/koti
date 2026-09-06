@@ -3,6 +3,7 @@ import { Thermometer, Droplets, Activity, DoorClosed, DoorOpen, ShieldCheck, Shi
 import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig } from '../../types/dashboard';
 import { OneUICard } from '../oneui/OneUICard';
+import { DynamicIcon } from '../oneui/DynamicIcon';
 
 interface SensorWidgetProps {
   config: WidgetConfig;
@@ -84,7 +85,7 @@ export const SensorWidget: React.FC<SensorWidgetProps> = ({
               color: accentColor,
             }}
           >
-            <Icon size={22} />
+            <DynamicIcon name={config.customIcon} defaultIcon={Icon} size={22} />
           </div>
 
           <span

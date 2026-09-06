@@ -3,6 +3,7 @@ import { Zap, Power } from 'lucide-react';
 import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig } from '../../types/dashboard';
 import { OneUICard } from '../oneui/OneUICard';
+import { DynamicIcon } from '../oneui/DynamicIcon';
 
 interface SwitchWidgetProps {
   config: WidgetConfig;
@@ -64,7 +65,7 @@ export const SwitchWidget: React.FC<SwitchWidgetProps> = ({
                 : undefined
             }
           >
-            <Power size={22} />
+            <DynamicIcon name={config.customIcon} defaultIcon={Power} size={22} />
           </div>
 
           <span

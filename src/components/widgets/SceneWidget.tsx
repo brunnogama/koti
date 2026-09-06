@@ -3,6 +3,7 @@ import { Play, Sparkles, Check } from 'lucide-react';
 import { HAEntityState } from '../../types/homeAssistant';
 import { WidgetConfig } from '../../types/dashboard';
 import { OneUICard } from '../oneui/OneUICard';
+import { DynamicIcon } from '../oneui/DynamicIcon';
 
 interface SceneWidgetProps {
   config: WidgetConfig;
@@ -64,7 +65,11 @@ export const SceneWidget: React.FC<SceneWidgetProps> = ({
               boxShadow: triggered ? `0 0 25px ${accentColor}` : undefined,
             }}
           >
-            {triggered ? <Check size={22} /> : <Sparkles size={22} />}
+            {triggered ? (
+              <Check size={22} />
+            ) : (
+              <DynamicIcon name={config.customIcon} defaultIcon={Sparkles} size={22} />
+            )}
           </div>
 
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/5 text-slate-300">
