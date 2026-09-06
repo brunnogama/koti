@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Koti
+Comment=Painel de Casa Inteligente para Home Assistant estilo One UI
+Exec=/usr/bin/koti %U
+Terminal=false
+Type=Application
+Icon=koti
+StartupWMClass=koti
+Categories=Utility;Network;
+Keywords=SmartHome;HomeAssistant;IoT;

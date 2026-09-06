@@ -1,0 +1,41 @@
+name: Build Koti Fedora RPM
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build-rpm:
+    name: Build Fedora RPM Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install RPM Packaging Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Make Build Scripts Executable
+        run: chmod +x build-rpm.sh
+
+      - name: Build Fedora RPM
+        run: ./build-rpm.sh
+
+      - name: Upload RPM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: koti-fedora-rpm-v1.0.4-x86_64
+          path: rpmbuild/RPMS/x86_64/*.rpm

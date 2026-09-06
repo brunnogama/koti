@@ -1,0 +1,37 @@
+{
+  "appId": "com.koti.smarthome",
+  "productName": "Koti",
+  "publish": null,
+  "directories": {
+    "output": "dist-electron"
+  },
+  "files": [
+    "dist/**/*",
+    "electron/**/*",
+    "build/icon.png"
+  ],
+  "extraMetadata": {
+    "main": "electron/main.cjs"
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "rpm",
+        "arch": ["x64"]
+      },
+      {
+        "target": "AppImage",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "build/icon.png",
+    "category": "Utility",
+    "maintainer": "Bruno Gama <bruno@koti.home>",
+    "synopsis": "Painel de Casa Inteligente estilo One UI para Home Assistant",
+    "description": "Koti é um aplicativo para controle de casas inteligentes integrado ao Home Assistant com design fluido estilo Samsung One UI 9."
+  },
+  "rpm": {
+    "packageName": "koti",
+    "compression": "gzip"
+  }
+}
