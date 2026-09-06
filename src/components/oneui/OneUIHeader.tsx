@@ -111,26 +111,17 @@ export const OneUIHeader: React.FC<OneUIHeaderProps> = ({
             <Tv size={18} />
           </button>
 
-          {/* Edit Dashboard Button */}
+          {/* Edit Dashboard Button (Icon Only) */}
           <button
             onClick={onToggleEditMode}
-            className={`px-3.5 py-2 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 ${
+            title={isEditMode ? 'Concluir edição' : 'Editar Dashboard'}
+            className={`p-2.5 rounded-full transition-all duration-200 ${
               isEditMode
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40'
-                : 'oneui-glass text-slate-200 hover:text-white'
+                : 'oneui-glass text-slate-300 hover:text-white'
             }`}
           >
-            {isEditMode ? (
-              <>
-                <Check size={14} />
-                <span>Concluir</span>
-              </>
-            ) : (
-              <>
-                <Edit3 size={14} />
-                <span>Editar</span>
-              </>
-            )}
+            {isEditMode ? <Check size={18} /> : <Edit3 size={18} />}
           </button>
 
           {/* Settings Button */}
