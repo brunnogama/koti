@@ -71,6 +71,9 @@ export const LightDetailModal: React.FC<LightDetailModalProps> = ({
   const [localBrightness, setLocalBrightness] = useState(serverBrightness);
   const [isDragging, setIsDragging] = useState(false);
   const lastVibratePct = useRef(serverBrightness);
+  const currentBrightnessRef = useRef(serverBrightness);
+  const releaseCooldownTimerRef = useRef<any>(null);
+  const throttleTimerRef = useRef<any>(null);
 
   // Read current color from entity
   const entityRgb = entity?.attributes?.rgb_color as [number, number, number] | undefined;
@@ -83,10 +86,18 @@ export const LightDetailModal: React.FC<LightDetailModalProps> = ({
   const colorInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!isDragging) {
+    if (!isDragging && !releaseCooldownTimerRef.current) {
       setLocalBrightness(serverBrightness);
+      currentBrightnessRef.current = serverBrightness;
     }
   }, [serverBrightness, isDragging]);
+
+  useEffect(() => {
+    return () => {
+      if (releaseCooldownTimerRef.current) clearTimeout(releaseCooldownTimerRef.current);
+      if (throttleTimerRef.current) clearTimeout(throttleTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (entityRgb) {
@@ -132,6 +143,19 @@ export const LightDetailModal: React.FC<LightDetailModalProps> = ({
     } catch (_) {}
     setIsDragging(false);
     triggerHaptic('medium');
+
+    if (throttleTimerRef.current) {
+      clearTimeout(throttleTimerRef.current);
+      throttleTimerRef.current = null;
+    }
+
+    const finalVal = currentBrightnessRef.current;
+    onBrightnessChange(finalVal);
+
+    if (releaseCooldownTimerRef.current) clearTimeout(releaseCooldownTimerRef.current);
+    releaseCooldownTimerRef.current = setTimeout(() => {
+      releaseCooldownTimerRef.current = null;
+    }, 1200);
   };
 
   const updateBrightnessFromY = (clientY: number, el: HTMLElement) => {
@@ -140,6 +164,7 @@ export const LightDetailModal: React.FC<LightDetailModalProps> = ({
     const rawPct = Math.round(((rect.bottom - clientY) / rect.height) * 100);
     const clamped = Math.max(1, Math.min(100, rawPct));
     setLocalBrightness(clamped);
+    currentBrightnessRef.current = clamped;
 
     if (Math.abs(clamped - lastVibratePct.current) >= 15) {
       triggerHaptic('light');
@@ -150,7 +175,15 @@ export const LightDetailModal: React.FC<LightDetailModalProps> = ({
       onToggle();
     }
 
-    onBrightnessChange(Math.round((clamped / 100) * 255));
+    if (!throttleTimerRef.current) {
+      onBrightnessChange(clamped);
+      throttleTimerRef.current = setTimeout(() => {
+        throttleTimerRef.current = null;
+        if (currentBrightnessRef.current !== clamped) {
+          onBrightnessChange(currentBrightnessRef.current);
+        }
+      }, 150);
+    }
   };
 
   const handleSelectPreset = (rgb: [number, number, number], hex: string) => {

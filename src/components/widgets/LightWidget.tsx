@@ -50,12 +50,24 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const lastVibratePct = useRef(serverBrightness);
+  const currentBrightnessRef = useRef(serverBrightness);
+  const releaseCooldownTimerRef = useRef<any>(null);
+  const throttleTimerRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!isDragging) {
+    // Only update local state from server if user is NOT dragging AND not in cooldown after release
+    if (!isDragging && !releaseCooldownTimerRef.current) {
       setLocalBrightness(serverBrightness);
+      currentBrightnessRef.current = serverBrightness;
     }
   }, [serverBrightness, isDragging]);
+
+  useEffect(() => {
+    return () => {
+      if (releaseCooldownTimerRef.current) clearTimeout(releaseCooldownTimerRef.current);
+      if (throttleTimerRef.current) clearTimeout(throttleTimerRef.current);
+    };
+  }, []);
 
   const triggerHaptic = (style: 'light' | 'medium' = 'light') => {
     try {
@@ -91,6 +103,21 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
     } catch (_) {}
     setIsDragging(false);
     triggerHaptic('medium');
+
+    if (throttleTimerRef.current) {
+      clearTimeout(throttleTimerRef.current);
+      throttleTimerRef.current = null;
+    }
+
+    // Send final brightness directly in percent (0 to 100)
+    const finalVal = currentBrightnessRef.current;
+    onBrightnessChange(finalVal);
+
+    // Keep cooldown for 1200ms so stale intermediate WebSocket updates don't snap the slider
+    if (releaseCooldownTimerRef.current) clearTimeout(releaseCooldownTimerRef.current);
+    releaseCooldownTimerRef.current = setTimeout(() => {
+      releaseCooldownTimerRef.current = null;
+    }, 1200);
   };
 
   const updateBrightnessFromPointer = (clientX: number, el: HTMLElement) => {
@@ -98,6 +125,7 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
     const rawPct = Math.round(((clientX - rect.left) / rect.width) * 100);
     const clamped = Math.max(1, Math.min(100, rawPct));
     setLocalBrightness(clamped);
+    currentBrightnessRef.current = clamped;
 
     // Subtle haptic every 15% change during drag
     if (Math.abs(clamped - lastVibratePct.current) >= 15) {
@@ -109,7 +137,16 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
       onToggle();
     }
 
-    onBrightnessChange(Math.round((clamped / 100) * 255));
+    // Throttled update while dragging to avoid flooding Home Assistant
+    if (!throttleTimerRef.current) {
+      onBrightnessChange(clamped);
+      throttleTimerRef.current = setTimeout(() => {
+        throttleTimerRef.current = null;
+        if (currentBrightnessRef.current !== clamped) {
+          onBrightnessChange(currentBrightnessRef.current);
+        }
+      }, 150);
+    }
   };
 
   const isPill = config.size === 'pill';
@@ -314,7 +351,8 @@ export const LightWidget: React.FC<LightWidgetProps> = ({
               value={displayBrightness}
               onChange={(val) => {
                 setLocalBrightness(val);
-                onBrightnessChange(Math.round((val / 100) * 255));
+                currentBrightnessRef.current = val;
+                onBrightnessChange(val);
               }}
               accentColor={activeColor}
               label="Ajuste Fino"

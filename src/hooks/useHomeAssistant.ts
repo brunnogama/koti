@@ -65,7 +65,8 @@ export function useHomeAssistant() {
   }, [entities, callService]);
 
   const setBrightness = useCallback((entityId: string, brightnessPercent: number) => {
-    const rawVal = Math.round((brightnessPercent / 100) * 255);
+    const clamped = Math.max(0, Math.min(100, brightnessPercent));
+    const rawVal = Math.round((clamped / 100) * 255);
     callService('light', 'turn_on', {
       entity_id: entityId,
       brightness: rawVal,
