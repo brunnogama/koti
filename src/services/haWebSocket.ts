@@ -6,9 +6,8 @@ type StatusCallback = (status: 'disconnected' | 'connecting' | 'connected' | 'au
 export function normalizeHost(raw: string): { host: string; secure: boolean } {
   const trimmed = raw.trim();
   const secure = /^(https|wss):\/\//i.test(trimmed);
-  let host = trimmed.replace(/^(https?|wss?):\/\//i, '').replace(/\/+$/, '');
-  // Bare IP/hostname without a port: assume the Home Assistant default (8123)
-  if (host && !/:\d+$/.test(host) && !secure) host = `${host}:8123`;
+  const host = trimmed.replace(/^(https?|wss?):\/\//i, '').replace(/\/+$/, '');
+  // No port typed: behave like the browser (http -> 80, https -> 443)
   return { host, secure };
 }
 
@@ -29,10 +28,10 @@ export async function testHAConnection(rawHost: string, token: string): Promise<
   if (!token.trim()) return { ok: false, error: 'Informe o token de acesso.', ...empty };
   const headers = { Authorization: `Bearer ${token.trim()}` };
 
-  // No explicit port typed: try 8123 (default) and then 80 (reverse proxy / custom setups)
+  // No explicit port typed: try the browser default (80/443) and then 8123
   const typedPort = /:\d+$/.test(rawHost.trim().replace(/\/+$/, ''));
   const bare = host.replace(/:\d+$/, '');
-  const candidates = typedPort || secure ? [host] : [`${bare}:8123`, bare];
+  const candidates = typedPort || secure ? [host] : [bare, `${bare}:8123`];
 
   for (const candidate of candidates) {
     const base = `${secure ? 'https' : 'http'}://${candidate}`;

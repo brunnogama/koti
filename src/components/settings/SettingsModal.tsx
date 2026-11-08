@@ -250,7 +250,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm font-mono"
                     />
                     <p className="text-[11px] text-slate-500 mt-1">
-                      Se não informar a porta, usa 8123 automaticamente. Use https:// para conexões seguras.
+                      Use o mesmo endereço do navegador (ex: 10.0.0.32 ou 10.0.0.32:8123). Sem porta, usa 80 e testa 8123 como alternativa.
                     </p>
                   </div>
 
