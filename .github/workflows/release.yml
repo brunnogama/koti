@@ -1,0 +1,48 @@
+name: Release Koti
+
+# Push a tag like v1.0.10 to publish: web bundle (OTA), version.json and the RPM.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install RPM tools
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
+      - run: npm ci
+
+      - name: Check tag matches package.json
+        run: |
+          [ "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} != package.json version"; exit 1; }
+
+      - name: Build RPM (also builds dist/)
+        run: |
+          chmod +x build-rpm.sh
+          ./build-rpm.sh "${GITHUB_REF_NAME#v}"
+
+      - name: Package OTA web bundle
+        run: |
+          mkdir -p release
+          tar -czf release/koti-web.tar.gz -C dist .
+          SHA=$(sha256sum release/koti-web.tar.gz | cut -d' ' -f1)
+          printf '{"version":"%s","file":"koti-web.tar.gz","sha256":"%s","notes":""}\n' "${GITHUB_REF_NAME#v}" "$SHA" > release/version.json
+          cp rpmbuild/RPMS/x86_64/*.rpm release/
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true

@@ -3,6 +3,65 @@ import { HAConnectionConfig, HAEntityState, HAWebSocketMessage } from '../types/
 type StateChangeCallback = (entityId: string, newState: HAEntityState) => void;
 type StatusCallback = (status: 'disconnected' | 'connecting' | 'connected' | 'auth_failed') => void;
 
+export function normalizeHost(raw: string): { host: string; secure: boolean } {
+  const trimmed = raw.trim();
+  const secure = /^(https|wss):\/\//i.test(trimmed);
+  let host = trimmed.replace(/^(https?|wss?):\/\//i, '').replace(/\/+$/, '');
+  // Bare IP/hostname without a port: assume the Home Assistant default (8123)
+  if (host && !/:\d+$/.test(host) && !secure) host = `${host}:8123`;
+  return { host, secure };
+}
+
+export interface HATestResult {
+  ok: boolean;
+  error?: string;
+  host?: string; // host (with port) that actually answered
+  version?: string;
+  locationName?: string;
+  total: number;
+  counts: Record<string, number>;
+}
+
+export async function testHAConnection(rawHost: string, token: string): Promise<HATestResult> {
+  const empty = { total: 0, counts: {} as Record<string, number> };
+  const { host, secure } = normalizeHost(rawHost);
+  if (!host) return { ok: false, error: 'Informe o IP do Home Assistant.', ...empty };
+  if (!token.trim()) return { ok: false, error: 'Informe o token de acesso.', ...empty };
+  const headers = { Authorization: `Bearer ${token.trim()}` };
+
+  // No explicit port typed: try 8123 (default) and then 80 (reverse proxy / custom setups)
+  const typedPort = /:\d+$/.test(rawHost.trim().replace(/\/+$/, ''));
+  const bare = host.replace(/:\d+$/, '');
+  const candidates = typedPort || secure ? [host] : [`${bare}:8123`, bare];
+
+  for (const candidate of candidates) {
+    const base = `${secure ? 'https' : 'http'}://${candidate}`;
+    const ctrl = new AbortController();
+    const timer = window.setTimeout(() => ctrl.abort(), 5000);
+    try {
+      const cfgRes = await fetch(`${base}/api/config`, { headers, signal: ctrl.signal });
+      if (cfgRes.status === 401) {
+        return { ok: false, host: candidate, error: `Home Assistant encontrado em ${candidate}, mas o token é inválido ou foi revogado. Gere um novo em Perfil > Segurança > Tokens de acesso de longa duração.`, ...empty };
+      }
+      if (!cfgRes.ok) continue;
+      const cfg = await cfgRes.json();
+      const statesRes = await fetch(`${base}/api/states`, { headers, signal: ctrl.signal });
+      const states: HAEntityState[] = statesRes.ok ? await statesRes.json() : [];
+      const counts: Record<string, number> = {};
+      states.forEach((e) => {
+        const d = e.entity_id.split('.')[0];
+        counts[d] = (counts[d] || 0) + 1;
+      });
+      return { ok: true, host: candidate, version: cfg.version, locationName: cfg.location_name, total: states.length, counts };
+    } catch {
+      // network error / timeout: try next candidate
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }
+  return { ok: false, error: `Não foi possível alcançar ${candidates.join(' nem ')}. Verifique o IP e se está na mesma rede.`, ...empty };
+}
+
 class HAWebSocketClient {
   private ws: WebSocket | null = null;
   private messageId = 1;
@@ -94,8 +153,7 @@ class HAWebSocketClient {
     this.notifyStatus('connecting');
 
     // Normalize URL
-    let cleanHost = config.host.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
-    const isHttps = config.host.toLowerCase().startsWith('https');
+    const { host: cleanHost, secure: isHttps } = normalizeHost(config.host);
     const wsProtocol = isHttps ? 'wss' : 'ws';
     const httpProtocol = isHttps ? 'https' : 'http';
     const wsUrl = `${wsProtocol}://${cleanHost}/api/websocket`;
@@ -239,9 +297,8 @@ class HAWebSocketClient {
       });
     } else if (this.config?.token) {
       // Direct REST fallback
-      const isHttps = this.config.host.toLowerCase().startsWith('https');
+      const { host: cleanHost, secure: isHttps } = normalizeHost(this.config.host);
       const httpProtocol = isHttps ? 'https' : 'http';
-      const cleanHost = this.config.host.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
       fetch(`${httpProtocol}://${cleanHost}/api/services/${domain}/${service}`, {
         method: 'POST',
         headers: {

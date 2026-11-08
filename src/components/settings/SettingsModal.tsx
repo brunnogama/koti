@@ -17,6 +17,8 @@ import {
   BellRing,
   Monitor,
 } from 'lucide-react';
+import { testHAConnection, HATestResult } from '../../services/haWebSocket';
+import { UpdateSection } from './UpdateSection';
 import { HAConnectionConfig } from '../../types/homeAssistant';
 import { ThemeConfig, ThemePreset } from '../../types/dashboard';
 
@@ -76,6 +78,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [host, setHost] = useState(haConfig.host);
   const [token, setToken] = useState(haConfig.token);
   const [demoMode, setDemoMode] = useState(haConfig.useDemoMode);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<HATestResult | null>(null);
+  const [saved, setSaved] = useState(false);
   const [customWallpaper, setCustomWallpaper] = useState(theme.customWallpaperUrl || '');
   const [importJsonText, setImportJsonText] = useState('');
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -88,6 +93,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     onClose();
   };
 
+  const handleTest = async () => {
+    setTesting(true);
+    setTestResult(null);
+    const result = await testHAConnection(host, token);
+    if (result.host) setHost(result.host);
+    setTestResult(result);
+    setTesting(false);
+  };
+
   const handleSaveConnection = (e: React.FormEvent) => {
     e.preventDefault();
     onSaveHAConfig({
@@ -95,7 +109,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       token: token.trim(),
       useDemoMode: demoMode,
     });
-    onClose();
+    setSaved(true);
+    window.setTimeout(() => setSaved(false), 2500);
   };
 
   const handleImport = () => {
@@ -225,7 +240,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <>
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                      IP / Endereço do Raspberry Pi
+                      IP do Home Assistant
                     </label>
                     <input
                       type="text"
@@ -235,7 +250,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm font-mono"
                     />
                     <p className="text-[11px] text-slate-500 mt-1">
-                      Conexão direta local via WebSocket (rápido e sem intermediários).
+                      Se não informar a porta, usa 8123 automaticamente. Use https:// para conexões seguras.
                     </p>
                   </div>
 
@@ -254,11 +269,50 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </>
               )}
 
+              {!demoMode && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleTest}
+                    disabled={testing}
+                    className="w-full py-3 rounded-2xl text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-all disabled:opacity-60"
+                  >
+                    {testing ? 'Conectando...' : 'Testar e buscar dispositivos'}
+                  </button>
+                  {testResult && (
+                    <div
+                      className={`p-4 rounded-2xl border text-xs ${
+                        testResult.ok
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+                          : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+                      }`}
+                    >
+                      {testResult.ok ? (
+                        <>
+                          <div className="font-semibold text-sm mb-1">
+                            Conectado{testResult.locationName ? ` a "${testResult.locationName}"` : ''}
+                            {testResult.version ? ` (HA ${testResult.version})` : ''}
+                          </div>
+                          <div>
+                            {testResult.total} entidades encontradas: {testResult.counts.light || 0} luzes,{' '}
+                            {testResult.counts.switch || 0} interruptores, {testResult.counts.sensor || 0} sensores,{' '}
+                            {testResult.counts.climate || 0} climas, {testResult.counts.scene || 0} cenas.
+                          </div>
+                          <div className="mt-1 text-emerald-300/80">Toque em salvar para usar esta conexão.</div>
+                        </>
+                      ) : (
+                        testResult.error
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+
               <button
                 type="submit"
                 className="w-full py-3 rounded-2xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/40 transition-all"
               >
-                Salvar Configuração de Conexão
+                {saved ? 'Conexão salva! Buscando dispositivos...' : 'Salvar Configuração de Conexão'}
               </button>
             </form>
           )}
@@ -487,6 +541,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* TAB 3: BACKUP & SYNC */}
           {activeTab === 'backup' && (
             <div className="space-y-4">
+              <UpdateSection />
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
                 <h4 className="text-sm font-medium text-white mb-1">Exportar Layout</h4>
                 <p className="text-xs text-slate-400 mb-3">

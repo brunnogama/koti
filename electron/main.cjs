@@ -1,5 +1,6 @@
 const { app, BrowserWindow, shell, nativeTheme } = require('electron');
 const path = require('path');
+const { registerUpdaterIpc, resolveIndexHtml } = require('./updater.cjs');
 
 // Support native Wayland and X11 automatically
 if (process.platform === 'linux') {
@@ -22,6 +23,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.cjs'),
       webSecurity: false, // Allows local LAN access (http://10.0.0.32) without mixed content / CORS issues
       allowRunningInsecureContent: true,
     },
@@ -34,7 +36,7 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    mainWindow.loadFile(resolveIndexHtml(path.join(__dirname, '../dist')));
   }
 
   // Open external links in user's default browser
@@ -52,6 +54,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  registerUpdaterIpc(() => mainWindow, path.join(__dirname, '../dist'));
   createWindow();
 
   app.on('activate', () => {
