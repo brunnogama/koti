@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Koti
+Comment=Painel de casa inteligente para o Home Assistant
+Exec=koti
+Icon=io.github.brunnogama.Koti
+Terminal=false
+Categories=GNOME;GTK;Utility;
+Keywords=home assistant;casa;automação;luzes;
+StartupNotify=true
+StartupWMClass=io.github.brunnogama.Koti

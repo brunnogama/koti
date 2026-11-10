@@ -1,18 +1,15 @@
 #!/bin/bash
+# Gera o RPM do Koti desktop (GTK4/libadwaita). O app Android continua usando build-apk.sh.
 set -e
+cd "$(dirname "$0")"
 
-VERSION="${1:-$(node -p "require('./package.json').version")}"
+VERSION="${1:-$(python3 -c "import re;print(re.search(r'\"(.+)\"',open('desktop/koti/__init__.py').read()).group(1))")}"
 echo "==> Versão de empacotamento: $VERSION <=="
 
-echo "==> 1. Gerando build dos assets web (Vite) <=="
-npm run build
+python3 -m py_compile desktop/koti/*.py
+find desktop -name __pycache__ -prune -exec rm -rf {} +
 
-echo "==> 2. Empacotando aplicação Electron <=="
-npx electron-builder --config electron-builder.json --dir
-
-echo "==> 3. Construindo pacote RPM nativo com rpmbuild <=="
 mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,tmp}
-
 rpmbuild -bb \
   --define "_topdir $(pwd)/rpmbuild" \
   --define "_sourcedir $(pwd)" \
@@ -22,4 +19,4 @@ rpmbuild -bb \
 
 echo ""
 echo "==> [SUCESSO] Pacote RPM construído com sucesso! <=="
-ls -lh rpmbuild/RPMS/x86_64/*.rpm
+ls -lh rpmbuild/RPMS/noarch/*.rpm
